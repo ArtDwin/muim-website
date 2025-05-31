@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MUIM Web3 Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
-
     * {
       margin: 0;
       padding: 0;
@@ -15,44 +14,31 @@
 
     body {
       font-family: 'Orbitron', sans-serif;
-      height: 100vh;
-      background: #000;
+      background: url('https://raw.githubusercontent.com/ArtDwin/muim-website/main/qkong-banner.jpg') no-repeat center center/cover;
       color: #00fff7;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       text-align: center;
-    }
-
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
+      padding: 100px 20px;
     }
 
     h1 {
-      font-size: 3.5rem;
-      margin-bottom: 0.5rem;
-      text-shadow: 0 0 20px #0ff;
+      font-size: 3em;
+      text-shadow: 0 0 15px #00fff7;
     }
 
     h2 {
-      font-size: 1.4rem;
-      margin-bottom: 30px;
-      color: #ff00cc;
-      text-shadow: 0 0 15px #ff00cc;
+      margin-top: 15px;
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff;
     }
 
     .btn {
-      padding: 14px 28px;
+      margin-top: 30px;
+      padding: 14px 30px;
+      font-size: 18px;
       border: 2px solid #00fff7;
+      color: #00fff7;
       background: transparent;
       border-radius: 10px;
-      color: #00fff7;
-      font-size: 16px;
       cursor: pointer;
       transition: 0.3s;
     }
@@ -61,72 +47,37 @@
       background: #00fff7;
       color: #000;
     }
+
+    #walletAddress {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #ccc;
+    }
   </style>
 </head>
 <body>
-  <canvas id="bg"></canvas>
 
-  <h1>Welcome to<br>MUIM</h1>
+  <h1>Welcome to <br> MUIM</h1>
   <h2>The Official Web3 Identity & Launch Portal</h2>
-  <button class="btn" onclick="checkMetaMask()">Access MUIM Wallet</button>
+
+  <button class="btn" onclick="connectWallet()">Access MUIM Wallet</button>
+
+  <div id="walletAddress">Wallet not connected</div>
 
   <script>
-    function checkMetaMask() {
+    async function connectWallet() {
       if (typeof window.ethereum !== 'undefined') {
-        alert('✅ MetaMask is detected! Ready to connect.');
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          document.getElementById('walletAddress').innerText = "🔓 Connected: " + accounts[0];
+        } catch (error) {
+          alert("❗Access denied by user.");
+        }
       } else {
-        alert('❗ MetaMask not detected. Please install it.');
+        alert("❗ MetaMask not detected. Please install it.");
       }
     }
-
-    // Particle background
-    const canvas = document.getElementById("bg");
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let particles = [];
-
-    function initParticles() {
-      particles = [];
-      for (let i = 0; i < 200; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          size: Math.random() * 3 + 1,
-          speedX: (Math.random() - 0.5) * 1.5,
-          speedY: (Math.random() - 0.5) * 1.5,
-          color: Math.random() > 0.5 ? '#ff00cc' : '#00fff7'
-        });
-      }
-    }
-
-    function animateParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.fill();
-
-        p.x += p.speedX;
-        p.y += p.speedY;
-
-        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
-      });
-
-      requestAnimationFrame(animateParticles);
-    }
-
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initParticles();
-    });
-
-    initParticles();
-    animateParticles();
   </script>
+
 </body>
 </html>
