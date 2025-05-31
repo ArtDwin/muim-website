@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,166 +18,169 @@
       --gradient-1: linear-gradient(135deg, #00ffff, #8b5cf6);
       --gradient-2: linear-gradient(135deg, #ff00ff, #00ffff);
       --gradient-3: linear-gradient(45deg, #8b5cf6, #ff00ff, #00ffff);
-    }* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    }
 
-body {
-  font-family: 'Space Grotesk', sans-serif;
-  background: var(--dark-bg);
-  color: #ffffff;
-  overflow-x: hidden;
-  line-height: 1.6;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: rgba(10, 10, 15, 0.8);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--glass-border);
-  z-index: 1000;
-  padding: 1rem 0;
-}
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: #000;
+      color: #ffffff;
+      overflow-x: hidden;
+      line-height: 1.6;
+      background-image: url('https://assets.codepen.io/1462889/stars.svg');
+      background-size: cover;
+    }
 
-.nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10, 10, 15, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      z-index: 1000;
+      padding: 1rem 0;
+    }
 
-.logo {
-  font-family: 'Orbitron', monospace;
-  font-size: 2rem;
-  font-weight: 900;
-  background: var(--gradient-1);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
 
-.nav-links {
-  display: flex;
-  gap: 1.5rem;
-  list-style: none;
-}
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem;
+      font-weight: 900;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-.nav-link {
-  color: #ffffff;
-  text-decoration: none;
-  font-weight: 500;
-}
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
 
-.nav-link:hover {
-  color: var(--primary-cyan);
-}
+    .nav-link {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+    }
 
-.hero {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 6rem 2rem 2rem;
-}
+    .nav-link:hover {
+      color: var(--primary-cyan);
+    }
 
-.hero-title {
-  font-size: 3.5rem;
-  font-family: 'Orbitron', monospace;
-  font-weight: 900;
-  background: var(--gradient-3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 6rem 2rem 2rem;
+    }
 
-.hero-description {
-  max-width: 700px;
-  margin: 1rem auto 2rem;
-  color: #ccc;
-}
+    .hero-title {
+      font-size: 3.5rem;
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      background: var(--gradient-3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-.btn-group {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-}
+    .hero-description {
+      max-width: 700px;
+      margin: 1rem auto 2rem;
+      color: #ccc;
+    }
 
-.btn {
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s ease;
-}
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
 
-.btn-primary {
-  background: var(--gradient-1);
-  color: black;
-}
+    .btn {
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s ease;
+    }
 
-.btn-primary:hover {
-  opacity: 0.9;
-}
+    .btn-primary {
+      background: var(--gradient-1);
+      color: black;
+    }
 
-.btn-secondary {
-  background: transparent;
-  border: 2px solid var(--primary-cyan);
-  color: white;
-}
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
 
-.wallet-status {
-  margin-top: 1.5rem;
-  color: var(--primary-magenta);
-}
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid var(--primary-cyan);
+      color: white;
+    }
 
-#rocket-animation {
-  width: 180px;
-  height: 180px;
-  margin-top: 2rem;
-}
+    .wallet-status {
+      margin-top: 1.5rem;
+      color: var(--primary-magenta);
+    }
 
-.footer {
-  padding: 3rem 2rem;
-  background: var(--darker-bg);
-}
+    #rocket-animation {
+      width: 180px;
+      height: 180px;
+      margin-top: 2rem;
+    }
 
-.footer a {
-  color: #ccc;
-  display: block;
-  margin: 0.3rem 0;
-  text-decoration: none;
-}
+    .footer {
+      padding: 3rem 2rem;
+      background: var(--darker-bg);
+    }
 
-.footer a:hover {
-  color: var(--primary-cyan);
-}
+    .footer a {
+      color: #ccc;
+      display: block;
+      margin: 0.3rem 0;
+      text-decoration: none;
+    }
 
-.footer-bottom {
-  text-align: center;
-  margin-top: 2rem;
-  color: #777;
-  font-size: 0.9rem;
-}
+    .footer a:hover {
+      color: var(--primary-cyan);
+    }
 
-@media (max-width: 768px) {
-  .nav-links {
-    display: none;
-  }
+    .footer-bottom {
+      text-align: center;
+      margin-top: 2rem;
+      color: #777;
+      font-size: 0.9rem;
+    }
 
-  .hero-title {
-    font-size: 2.2rem;
-  }
-}
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
 
+      .hero-title {
+        font-size: 2.2rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -189,18 +193,24 @@ body {
         <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
     </nav>
-  </header>  <main>
+  </header>
+
+  <main>
     <section class="hero" id="home">
       <h1 class="hero-title">Web3 Identity & Launch Portal</h1>
-      <p class="hero-description">Experience the future of decentralized identity. Connect, interact, and explore the Web3 ecosystem with cutting-edge technology and seamless integration.</p>
+      <p class="hero-description">
+        Connect, explore, and evolve in the next generation of the Web3 universe.
+      </p>
       <div class="btn-group">
-        <button class="btn btn-primary" onclick="connectWallet()">🚀 Connect Wallet</button>
+        <button class="btn btn-primary" onclick="connectWallet()">🔐 Connect Wallet</button>
         <a href="#features" class="btn btn-secondary">✨ Explore Features</a>
       </div>
       <div id="rocket-animation"></div>
       <div class="wallet-status" id="walletStatus">Wallet Not Connected</div>
     </section>
-  </main>  <footer class="footer">
+  </main>
+
+  <footer class="footer">
     <div>
       <a href="#home">Home</a>
       <a href="#features">Features</a>
@@ -215,7 +225,9 @@ body {
       <a href="https://github.com/muim" target="_blank">GitHub</a>
     </div>
     <div class="footer-bottom">&copy; 2025 MUIM. All rights reserved.</div>
-  </footer>  <script>
+  </footer>
+
+  <script>
     async function connectWallet() {
       const status = document.getElementById('walletStatus');
       try {
@@ -236,4 +248,6 @@ body {
       autoplay: true,
       path: 'https://assets10.lottiefiles.com/packages/lf20_rocket.json'
     });
-  </script></body>
+  </script>
+</body>
+</html>
