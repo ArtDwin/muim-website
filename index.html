@@ -2,59 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MUIM Web3 Portal</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #000;
-      color: #00ffcc;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(ellipse at bottom, #000000 0%, #0d001a 100%);
+      overflow: hidden;
+      color: #00ffee;
       text-align: center;
-      padding: 50px;
     }
+
     h1 {
-      font-size: 48px;
-      margin-bottom: 10px;
+      font-size: 3em;
+      margin-top: 20vh;
+      text-shadow: 0 0 15px #00ffee;
     }
-    p {
-      font-size: 20px;
-      margin-bottom: 40px;
+
+    h2 {
+      color: #ff33ff;
+      font-size: 1.5em;
+      text-shadow: 0 0 10px #ff33ff;
     }
-    button {
-      background: none;
-      border: 2px solid #00ffcc;
-      color: #00ffcc;
-      padding: 12px 24px;
-      font-size: 18px;
-      border-radius: 6px;
-      cursor: pointer;
+
+    .btn {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 30px;
+      border: 2px solid #00ffee;
+      color: #00ffee;
+      background: transparent;
+      font-size: 1.1em;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.3s ease;
     }
-    button:hover {
-      background: #00ffcc;
+
+    .btn:hover {
+      background-color: #00ffee;
       color: #000;
+      box-shadow: 0 0 20px #00ffee;
+    }
+
+    .stars {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: black;
+      overflow: hidden;
+    }
+
+    .stars span {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #ff00ff;
+      animation: twinkle 4s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.1; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.5); }
     }
   </style>
 </head>
 <body>
+  <div class="stars" id="stars"></div>
+
   <h1>Welcome to MUIM</h1>
-  <p>The Official Web3 Identity & Launch Portal.</p>
-  <button id="walletBtn">Access MUIM Wallet</button>
+  <h2>The Official Web3 Identity & Launch Portal.</h2>
+  <a href="#" class="btn">Access MUIM Wallet</a>
 
   <script>
-    async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-          alert('✅ Connected: ' + accounts[0]);
-        } catch (error) {
-          alert('❌ Connection rejected');
-        }
-      } else {
-        alert('❗ MetaMask not detected. Please install it.');
-      }
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 120; i++) {
+      const star = document.createElement('span');
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.left = `${Math.random() * 100}%`;
+      starsContainer.appendChild(star);
     }
-
-    document.getElementById('walletBtn').onclick = connectWallet;
   </script>
 </body>
 </html>
