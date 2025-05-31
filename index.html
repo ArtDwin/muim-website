@@ -1,83 +1,886 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MUIM Web3 Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUIM - Web3 Identity Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-cyan: #00ffff;
+            --primary-magenta: #ff00ff;
+            --primary-purple: #8b5cf6;
+            --dark-bg: #0a0a0f;
+            --darker-bg: #050508;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --gradient-1: linear-gradient(135deg, #00ffff, #8b5cf6);
+            --gradient-2: linear-gradient(135deg, #ff00ff, #00ffff);
+            --gradient-3: linear-gradient(45deg, #8b5cf6, #ff00ff, #00ffff);
+        }
 
-    body {
-      font-family: 'Orbitron', sans-serif;
-      background: url('https://raw.githubusercontent.com/ArtDwin/muim-website/main/qkong-banner.jpg') no-repeat center center/cover;
-      color: #00fff7;
-      text-align: center;
-      padding: 100px 20px;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    h1 {
-      font-size: 3em;
-      text-shadow: 0 0 15px #00fff7;
-    }
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--dark-bg);
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
 
-    h2 {
-      margin-top: 15px;
-      color: #ff00ff;
-      text-shadow: 0 0 10px #ff00ff;
-    }
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 60%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            animation: bgPulse 8s ease-in-out infinite alternate;
+        }
 
-    .btn {
-      margin-top: 30px;
-      padding: 14px 30px;
-      font-size: 18px;
-      border: 2px solid #00fff7;
-      color: #00fff7;
-      background: transparent;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+        @keyframes bgPulse {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.7; }
+        }
 
-    .btn:hover {
-      background: #00fff7;
-      color: #000;
-    }
+        /* Particle System */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
 
-    #walletAddress {
-      margin-top: 20px;
-      font-size: 16px;
-      color: #ccc;
-    }
-  </style>
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5)); }
+            100% { filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.8)); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-cyan);
+            transform: translateY(-2px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-1);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            animation: fadeInUp 1.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: var(--gradient-3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            animation: fadeInUp 1.5s ease-out 0.3s both;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            color: rgba(255, 255, 255, 0.7);
+            animation: fadeInUp 1.5s ease-out 0.6s both;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1.5s ease-out 0.9s both;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: #000;
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            color: #fff;
+            border: 2px solid var(--primary-cyan);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-cyan);
+            color: #000;
+            transform: translateY(-3px);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        /* Status Display */
+        .wallet-status {
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            font-family: 'Orbitron', monospace;
+            animation: fadeInUp 1.5s ease-out 1.2s both;
+        }
+
+        .status-connected {
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .status-disconnected {
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 8rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .features-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 4rem;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-cyan);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.2);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-cyan);
+        }
+
+        .feature-description {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 6rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            position: relative;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 4rem 2rem 2rem;
+            background: var(--darker-bg);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-section h3 {
+            color: var(--primary-cyan);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-cyan);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 0 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding: 0 1rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body>
+    <div class="animated-bg"></div>
+    <canvas class="particles" id="particles"></canvas>
+    
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">MUIM</div>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
 
-  <h1>Welcome to <br> MUIM</h1>
-  <h2>The Official Web3 Identity & Launch Portal</h2>
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1 class="hero-title">MUIM</h1>
+                <h2 class="hero-subtitle">Web3 Identity & Launch Portal</h2>
+                <p class="hero-description">
+                    Experience the future of decentralized identity. Connect, interact, and explore the Web3 ecosystem 
+                    with cutting-edge technology and seamless integration.
+                </p>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="connectWallet()">
+                        🚀 Connect Wallet
+                    </button>
+                    <a href="#features" class="btn btn-secondary">
+                        ✨ Explore Features
+                    </a>
+                </div>
+                <div class="wallet-status" id="walletStatus">
+                    <span class="status-disconnected">Wallet Not Connected</span>
+                </div>
+            </div>
+        </section>
 
-  <button class="btn" onclick="connectWallet()">Access MUIM Wallet</button>
+        <section class="features fade-in" id="features">
+            <h2 class="features-title">Revolutionary Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3 class="feature-title">Secure Identity</h3>
+                    <p class="feature-description">
+                        Advanced cryptographic protocols ensure your digital identity remains secure and private.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Lightning Fast</h3>
+                    <p class="feature-description">
+                        Experience instant transactions and seamless interactions with optimized blockchain technology.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="feature-title">Multi-Chain Support</h3>
+                    <p class="feature-description">
+                        Connect to multiple blockchain networks and manage assets across different ecosystems.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3 class="feature-title">NFT Integration</h3>
+                    <p class="feature-description">
+                        Seamlessly manage, trade, and showcase your NFT collection with advanced tools.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Analytics Dashboard</h3>
+                    <p class="feature-description">
+                        Track your portfolio performance with real-time analytics and insights.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤝</div>
+                    <h3 class="feature-title">Community Driven</h3>
+                    <p class="feature-description">
+                        Join a vibrant community of Web3 enthusiasts and contribute to the ecosystem.
+                    </p>
+                </div>
+            </div>
+        </section>
 
-  <div id="walletAddress">Wallet not connected</div>
+        <section class="stats fade-in">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-number" data-target="150000">0</span>
+                    <span class="stat-label">Active Users</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="50000">0</span>
+                    <span class="stat-label">Transactions</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="25">0</span>
+                    <span class="stat-label">Supported Chains</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="99.9">0</span>
+                    <span class="stat-label">Uptime %</span>
+                </div>
+            </div>
+        </section>
+    </main>
 
-  <script>
-    async function connectWallet() {
-      if (typeof window.ethereum !== 'undefined') {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          document.getElementById('walletAddress').innerText = "🔓 Connected: " + accounts[0];
-        } catch (error) {
-          alert("❗Access denied by user.");
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>MUIM Platform</h3>
+                <p>The ultimate Web3 identity and launch portal, connecting users to the decentralized future.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#home">Home</a>
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <a href="#">Documentation</a>
+                <a href="#">API Reference</a>
+                <a href="#">Tutorials</a>
+                <a href="#">Support</a>
+            </div>
+            <div class="footer-section">
+                <h3>Community</h3>
+                <a href="#">Discord</a>
+                <a href="#">Twitter</a>
+                <a href="#">Telegram</a>
+                <a href="#">GitHub</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 MUIM. All rights reserved. | Built for the decentralized future.</p>
+        </div>
+    </footer>
+
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script>
+        // Particle System
+        class ParticleSystem {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.particles = [];
+                this.mouse = { x: 0, y: 0 };
+                
+                this.resizeCanvas();
+                this.createParticles();
+                this.bindEvents();
+                this.animate();
+            }
+
+            resizeCanvas() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            createParticles() {
+                const particleCount = Math.min(100, Math.floor(this.canvas.width * this.canvas.height / 10000));
+                this.particles = [];
+                
+                for (let i = 0; i < particleCount; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        size: Math.random() * 3 + 1,
+                        speedX: Math.random() * 2 - 1,
+                        speedY: Math.random() * 2 - 1,
+                        color: Math.random() > 0.5 ? '#00ffff' : '#ff00ff',
+                        opacity: Math.random() * 0.5 + 0.2
+                    });
+                }
+            }
+
+            bindEvents() {
+                window.addEventListener('resize', () => this.resizeCanvas());
+                this.canvas.addEventListener('mousemove', (e) => {
+                    this.mouse.x = e.clientX;
+                    this.mouse.y = e.clientY;
+                });
+            }
+
+            animate() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.particles.forEach((particle, index) => {
+                    // Update position
+                    particle.x += particle.speedX;
+                    particle.y += particle.speedY;
+
+                    // Mouse interaction
+                    const dx = this.mouse.x - particle.x;
+                    const dy = this.mouse.y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100) {
+                        particle.x -= dx * 0.01;
+                        particle.y -= dy * 0.01;
+                    }
+
+                    // Boundary check
+                    if (particle.x < 0 || particle.x > this.canvas.width) particle.speedX *= -1;
+                    if (particle.y < 0 || particle.y > this.canvas.height) particle.speedY *= -1;
+
+                    // Draw particle
+                    this.ctx.save();
+                    this.ctx.globalAlpha = particle.opacity;
+                    this.ctx.fillStyle = particle.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.restore();
+
+                    // Draw connections
+                    this.particles.slice(index + 1).forEach(otherParticle => {
+                        const dx = particle.x - otherParticle.x;
+                        const dy = particle.y - otherParticle.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < 150) {
+                            this.ctx.save();
+                            this.ctx.globalAlpha = (150 - distance) / 150 * 0.2;
+                            this.ctx.strokeStyle = '#00ffff';
+                            this.ctx.lineWidth = 0.5;
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(particle.x, particle.y);
+                            this.ctx.lineTo(otherParticle.x, otherParticle.y);
+                            this.ctx.stroke();
+                            this.ctx.restore();
+                        }
+                    });
+                });
+
+                requestAnimationFrame(() => this.animate());
+            }
         }
-      } else {
-        alert("❗ MetaMask not detected. Please install it.");
-      }
-    }
-  </script>
 
-</body>
-</html>
+        // Initialize particle system
+        const particleCanvas = document.getElementById('particles');
+        new ParticleSystem(particleCanvas);
+
+        // Wallet Connection
+        let isConnected = false;
+        let userAccount = null;
+
+        async function connectWallet() {
+            const loading = document.getElementById('loading');
+            const statusElement = document.getElementById('walletStatus');
+            
+            loading.style.display = 'block';
+
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    throw new Error('MetaMask not installed');
+                }
+
+                const accounts = await ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+
+                if (accounts.length > 0) {
+                    userAccount = accounts[0];
+                    isConnected = true;
+                    
+                    const shortAccount = userAccount.slice(0, 6) + '...' + userAccount.slice(-4);
+                    statusElement.innerHTML = `<span class="status-connected">Connected: ${shortAccount}</span>`;
+                    
+                    // Get network info
+                    const chainId = await ethereum.request({ method: 'eth_chainId' });
+                    console.log('Connected to chain:', chainId);
+                } else {
+                    throw new Error('No accounts found');
+                }
+            } catch (error) {
+                console.error('Connection error:', error);
+                statusElement.innerHTML = `<span class="status-disconnected">Connection failed: ${error.message}</span>`;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Counter animation
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start);
+                }
+            }, 16);
+        }
+
+        // Animate counters when stats section is visible
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counters = entry.target.querySelectorAll('.stat-number');
+                    counters.forEach(counter => {
+                        const target = parseInt(counter.getAttribute('data-target'));
+                        animateCounter(counter, target);
+                    });
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const statsSection = document.querySelector('.stats');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+
+        // Enhanced button interactions
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px) scale(1.02)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Feature card interactions
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.feature-icon');
+                icon.style.transform = 'scale(1.2) rotate(10deg)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.feature-icon');
+                icon.style.transform = 'scale(1) rotate(0deg)';
+            });
