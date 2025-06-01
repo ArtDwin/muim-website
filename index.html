@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MUIM - Web3 Identity Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <title>MUIM Galaxy - PinealCore AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
   <style>
     :root {
@@ -20,32 +20,23 @@
       --gradient-3: linear-gradient(45deg, #8b5cf6, #ff00ff, #00ffff);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Space Grotesk', sans-serif;
-      background: #000;
-      color: #ffffff;
+      background: #000 url('https://assets.codepen.io/1462889/stars.svg') repeat;
+      color: white;
       overflow-x: hidden;
-      line-height: 1.6;
-      background-image: url('https://assets.codepen.io/1462889/stars.svg');
-      background-size: cover;
     }
 
     .header {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(10, 10, 15, 0.8);
-      backdrop-filter: blur(20px);
+      top: 0; left: 0; right: 0;
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 1rem 0;
       border-bottom: 1px solid var(--glass-border);
       z-index: 1000;
-      padding: 1rem 0;
     }
 
     .nav {
@@ -53,7 +44,7 @@
       justify-content: space-between;
       align-items: center;
       max-width: 1200px;
-      margin: 0 auto;
+      margin: auto;
       padding: 0 2rem;
     }
 
@@ -73,14 +64,12 @@
     }
 
     .nav-link {
-      color: #ffffff;
+      color: white;
       text-decoration: none;
       font-weight: 500;
     }
 
-    .nav-link:hover {
-      color: var(--primary-cyan);
-    }
+    .nav-link:hover { color: var(--primary-cyan); }
 
     .hero {
       min-height: 100vh;
@@ -95,7 +84,6 @@
     .hero-title {
       font-size: 3.5rem;
       font-family: 'Orbitron', monospace;
-      font-weight: 900;
       background: var(--gradient-3);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -128,10 +116,6 @@
       color: black;
     }
 
-    .btn-primary:hover {
-      opacity: 0.9;
-    }
-
     .btn-secondary {
       background: transparent;
       border: 2px solid var(--primary-cyan);
@@ -144,42 +128,35 @@
     }
 
     #rocket-animation {
-      width: 180px;
-      height: 180px;
+      width: 160px;
+      height: 160px;
       margin-top: 2rem;
     }
 
     .footer {
       padding: 3rem 2rem;
       background: var(--darker-bg);
+      text-align: center;
     }
 
     .footer a {
       color: #ccc;
-      display: block;
-      margin: 0.3rem 0;
       text-decoration: none;
+      margin: 0.3rem;
+      display: inline-block;
     }
 
-    .footer a:hover {
-      color: var(--primary-cyan);
-    }
+    .footer a:hover { color: var(--primary-cyan); }
 
     .footer-bottom {
-      text-align: center;
       margin-top: 2rem;
       color: #777;
       font-size: 0.9rem;
     }
 
     @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-      }
-
-      .hero-title {
-        font-size: 2.2rem;
-      }
+      .nav-links { display: none; }
+      .hero-title { font-size: 2.2rem; }
     }
   </style>
 </head>
@@ -197,10 +174,8 @@
 
   <main>
     <section class="hero" id="home">
-      <h1 class="hero-title">Web3 Identity & Launch Portal</h1>
-      <p class="hero-description">
-        Connect, explore, and evolve in the next generation of the Web3 universe.
-      </p>
+      <h1 class="hero-title">🚀 Welcome to MUIM Galaxy</h1>
+      <p class="hero-description">Connect, explore, and evolve in the next generation of the Web3 universe.</p>
       <div class="btn-group">
         <button class="btn btn-primary" onclick="connectWallet()">🔐 Connect Wallet</button>
         <a href="#features" class="btn btn-secondary">✨ Explore Features</a>
@@ -211,19 +186,12 @@
   </main>
 
   <footer class="footer">
-    <div>
-      <a href="#home">Home</a>
-      <a href="#features">Features</a>
-      <a href="#contact">Contact</a>
-      <a href="https://muim-docs.io" target="_blank">Documentation</a>
-      <a href="https://api.muim.ai" target="_blank">API Reference</a>
-      <a href="https://muim.ai/tutorials" target="_blank">Tutorials</a>
-      <a href="https://support.muim.ai" target="_blank">Support</a>
-      <a href="https://discord.gg/muim" target="_blank">Discord</a>
-      <a href="https://twitter.com/muimofficial" target="_blank">Twitter</a>
-      <a href="https://t.me/muim" target="_blank">Telegram</a>
-      <a href="https://github.com/muim" target="_blank">GitHub</a>
-    </div>
+    <a href="#home">Home</a>
+    <a href="#features">Features</a>
+    <a href="#contact">Contact</a>
+    <a href="https://muim-docs.io" target="_blank">Docs</a>
+    <a href="https://api.muim.ai" target="_blank">API</a>
+    <a href="https://support.muim.ai" target="_blank">Support</a>
     <div class="footer-bottom">&copy; 2025 MUIM. All rights reserved.</div>
   </footer>
 
@@ -240,13 +208,13 @@
       }
     }
 
-    // Rocket Animation
+    // Rocket animation
     var animation = lottie.loadAnimation({
       container: document.getElementById('rocket-animation'),
       renderer: 'svg',
       loop: true,
       autoplay: true,
-      path: 'https://assets10.lottiefiles.com/packages/lf20_rocket.json'
+      path: 'https://assets1.lottiefiles.com/packages/lf20_jpxsQz.json'
     });
   </script>
 </body>
