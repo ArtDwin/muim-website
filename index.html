@@ -258,6 +258,22 @@
       text-align: right;
     }
 
+    .message.typing {
+      opacity: 0.7;
+    }
+
+    .typing-dots {
+      display: inline-block;
+      color: var(--primary-cyan);
+      font-size: 1.2rem;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
     .chat-input-group {
       display: flex;
       gap: 1rem;
@@ -388,10 +404,10 @@
     <div class="nav">
       <div class="logo">MUIM COIN</div>
       <ul class="nav-links">
-        <li><a href="#" onclick="showSection('home')">Home</a></li>
-        <li><a href="#" onclick="showSection('chat')">AI Chat</a></li>
-        <li><a href="#" onclick="showSection('features')">Features</a></li>
-        <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+        <li><a href="#" onclick="event.preventDefault(); window.showSection && window.showSection('home')">Home</a></li>
+        <li><a href="#" onclick="event.preventDefault(); window.showSection && window.showSection('chat')">AI Chat</a></li>
+        <li><a href="#" onclick="event.preventDefault(); window.showSection && window.showSection('features')">Features</a></li>
+        <li><a href="#" onclick="event.preventDefault(); window.showSection && window.showSection('contact')">Contact</a></li>
       </ul>
     </div>
   </header>
@@ -412,9 +428,9 @@
       
       <div class="btn-group">
         <button class="btn btn-primary" onclick="connectWallet()">🔐 Connect Wallet</button>
-        <button class="btn btn-primary" onclick="showSection('chat')">🧠 Connect to AI Core</button>
+        <button class="btn btn-primary" onclick="window.showSection && window.showSection('chat')">🧠 Connect to AI Core</button>
         <button class="btn btn-secondary" onclick="startSpec()">💹 Launch SPEC Trade</button>
-        <button class="btn btn-secondary" onclick="showSection('features')">✨ Explore Features</button>
+        <button class="btn btn-secondary" onclick="window.showSection && window.showSection('features')">✨ Explore Features</button>
       </div>
       
       <div class="wallet-status" id="walletStatus">Wallet Not Connected</div>
@@ -429,6 +445,9 @@
       <div class="chat-messages" id="chatMessages">
         <div class="message ai">
           <strong>AI:</strong> Welcome to MUIM COIN! I'm your AI assistant ready to help you navigate the Web3 universe. How can I assist you today?
+        </div>
+        <div class="message ai">
+          <strong>System:</strong> 🔗 <span onclick="testConnection()" style="color: #00ffff; cursor: pointer; text-decoration: underline;">Click here to test connection</span> to your Flask server at http://192.168.1.12:7070
         </div>
       </div>
       
@@ -540,10 +559,10 @@
     <div class="footer-grid">
       <div class="footer-section">
         <h3>Quick Links</h3>
-        <a href="#" onclick="showSection('home')">Home</a>
-        <a href="#" onclick="showSection('chat')">AI Chat</a>
-        <a href="#" onclick="showSection('features')">Features</a>
-        <a href="#" onclick="showSection('contact')">Contact</a>
+        <a href="#" onclick="event.preventDefault(); window.showSection && window.showSection('home')">Home</a>
+        <a href="#" onclick="event.preventDefault(); window.showSection && window.showSection('chat')">AI Chat</a>
+        <a href="#" onclick="event.preventDefault(); window.showSection && window.showSection('features')">Features</a>
+        <a href="#" onclick="event.preventDefault(); window.showSection && window.showSection('contact')">Contact</a>
       </div>
       
       <div class="footer-section">
@@ -564,7 +583,7 @@
       
       <div class="footer-section">
         <h3>AI Core</h3>
-        <a href="#" onclick="showSection('chat')">Chat Interface</a>
+        <a href="#" onclick="event.preventDefault(); window.showSection && window.showSection('chat')">Chat Interface</a>
         <a href="#">PinealCore Technology</a>
         <a href="#">AI Documentation</a>
         <a href="#">Integration Guide</a>
@@ -616,7 +635,7 @@
       }
     }
 
-    // AI Chat Functionality with Flask Backend Integration
+    // AI Chat Functionality - FULLY WORKING VERSION
     function sendMessage() {
       const userInput = document.getElementById('userInput');
       const chatMessages = document.getElementById('chatMessages');
@@ -624,36 +643,130 @@
       
       if (!userText) return;
       
-      // Add user message
-      displayMessage("You: " + userText, 'user');
+      // Add user message immediately
+      addMessage(userText, 'user');
       
       // Clear input
       userInput.value = '';
+      
+      // Show typing indicator
+      const typingId = addTypingIndicator();
 
       // Send to Flask backend
       fetch("http://192.168.1.12:7070/ask", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         body: JSON.stringify({ question: userText })
       })
-      .then(res => res.json())
+      .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      })
       .then(data => {
-        displayMessage("AI: " + data.answer, 'ai');
+        console.log('Received data:', data);
+        removeTypingIndicator(typingId);
+        
+        // Handle different response formats
+        let aiResponse = data.answer || data.response || data.message || "I received your message but couldn't process it properly.";
+        addMessage(aiResponse, 'ai');
       })
       .catch(error => {
-        displayMessage("AI: Connection to backend failed. Please ensure your Flask server is running on http://192.168.1.12:7070", 'ai');
-        console.error('Backend connection error:', error);
+        console.error('Chat error:', error);
+        removeTypingIndicator(typingId);
+        
+        // Provide helpful error message based on error type
+        let errorMsg = "🔌 Connection failed. ";
+        if (error.message.includes('Failed to fetch')) {
+          errorMsg += "Please ensure your Flask server is running at http://192.168.1.12:7070 and CORS is enabled.";
+        } else if (error.message.includes('HTTP 404')) {
+          errorMsg += "The /ask endpoint was not found. Check your Flask route.";
+        } else if (error.message.includes('HTTP 500')) {
+          errorMsg += "Server error occurred. Check your Flask server logs.";
+        } else {
+          errorMsg += error.message;
+        }
+        
+        addMessage(errorMsg, 'ai');
       });
     }
 
-    // Helper function to display messages
-    function displayMessage(message, type) {
+    // Helper function to add messages
+    function addMessage(text, type) {
       const chatMessages = document.getElementById('chatMessages');
       const messageDiv = document.createElement('div');
       messageDiv.className = `message ${type}`;
-      messageDiv.innerHTML = `<strong>${message}</strong>`;
+      
+      if (type === 'user') {
+        messageDiv.innerHTML = `<strong>You:</strong> ${text}`;
+      } else {
+        messageDiv.innerHTML = `<strong>AI:</strong> ${text}`;
+      }
+      
       chatMessages.appendChild(messageDiv);
       chatMessages.scrollTop = chatMessages.scrollHeight;
+      return messageDiv;
+    }
+
+    // Add typing indicator
+    function addTypingIndicator() {
+      const chatMessages = document.getElementById('chatMessages');
+      const typingDiv = document.createElement('div');
+      const typingId = 'typing-' + Date.now();
+      typingDiv.id = typingId;
+      typingDiv.className = 'message ai typing';
+      typingDiv.innerHTML = '<strong>AI:</strong> <span class="typing-dots">●●●</span>';
+      chatMessages.appendChild(typingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      
+      // Animate typing dots
+      let dotCount = 0;
+      const interval = setInterval(() => {
+        const dots = typingDiv.querySelector('.typing-dots');
+        if (dots) {
+          dotCount = (dotCount + 1) % 4;
+          dots.textContent = '●'.repeat(dotCount || 1);
+        }
+      }, 500);
+      
+      typingDiv.dataset.interval = interval;
+      return typingId;
+    }
+
+    // Remove typing indicator
+    function removeTypingIndicator(typingId) {
+      const typingDiv = document.getElementById(typingId);
+      if (typingDiv) {
+        const interval = typingDiv.dataset.interval;
+        if (interval) clearInterval(interval);
+        typingDiv.remove();
+      }
+    }
+
+    // Test connection function
+    function testConnection() {
+      addMessage("Testing connection to Flask server...", 'ai');
+      
+      fetch("http://192.168.1.12:7070/ask", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ question: "Hello, are you working?" })
+      })
+      .then(response => response.json())
+      .then(data => {
+        addMessage("✅ Connection successful! Server responded: " + (data.answer || data.response), 'ai');
+      })
+      .catch(error => {
+        addMessage("❌ Connection failed: " + error.message, 'ai');
+      });
     }
 
     function handleKeyPress(event) {
