@@ -577,23 +577,29 @@
   </footer>
 
   <script>
-    // Navigation and Section Management
+    // Navigation and Section Management - FIXED!
     function showSection(sectionName) {
-      // Hide all sections
-      document.getElementById('home-section').style.display = 'flex';
-      document.getElementById('chat-section').classList.remove('active');
-      document.getElementById('features-section').classList.remove('active');
+      const homeSection = document.getElementById('home-section');
+      const chatSection = document.getElementById('chat-section');
+      const featuresSection = document.getElementById('features-section');
+      
+      // Hide all sections first
+      if (homeSection) homeSection.style.display = 'none';
+      if (chatSection) chatSection.classList.remove('active');
+      if (featuresSection) featuresSection.classList.remove('active');
       
       // Show requested section
-      if (sectionName === 'home') {
-        document.getElementById('home-section').style.display = 'flex';
-      } else if (sectionName === 'chat') {
-        document.getElementById('home-section').style.display = 'none';
-        document.getElementById('chat-section').classList.add('active');
-        document.getElementById('userInput').focus();
-      } else if (sectionName === 'features') {
-        document.getElementById('home-section').style.display = 'none';
-        document.getElementById('features-section').classList.add('active');
+      if (sectionName === 'home' && homeSection) {
+        homeSection.style.display = 'flex';
+      } else if (sectionName === 'chat' && chatSection) {
+        chatSection.classList.add('active');
+        // Focus on input when chat section opens
+        setTimeout(() => {
+          const userInput = document.getElementById('userInput');
+          if (userInput) userInput.focus();
+        }, 100);
+      } else if (sectionName === 'features' && featuresSection) {
+        featuresSection.classList.add('active');
       }
     }
 
@@ -610,7 +616,7 @@
       }
     }
 
-    // AI Chat Functionality with Live Backend Integration
+    // AI Chat Functionality with Flask Backend Integration
     function sendMessage() {
       const userInput = document.getElementById('userInput');
       const chatMessages = document.getElementById('chatMessages');
@@ -619,16 +625,12 @@
       if (!userText) return;
       
       // Add user message
-      const userMessage = document.createElement('div');
-      userMessage.className = 'message user';
-      userMessage.innerHTML = `<strong>You:</strong> ${userText}`;
-      chatMessages.appendChild(userMessage);
+      displayMessage("You: " + userText, 'user');
       
       // Clear input
       userInput.value = '';
-      chatMessages.scrollTop = chatMessages.scrollHeight;
 
-      // Connect to your live Termux backend
+      // Send to Flask backend
       fetch("http://192.168.1.12:7070/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -636,20 +638,22 @@
       })
       .then(res => res.json())
       .then(data => {
-        const aiMessage = document.createElement('div');
-        aiMessage.className = 'message ai';
-        aiMessage.innerHTML = `<strong>AI:</strong> ${data.answer}`;
-        chatMessages.appendChild(aiMessage);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        displayMessage("AI: " + data.answer, 'ai');
       })
       .catch(error => {
-        const errorMessage = document.createElement('div');
-        errorMessage.className = 'message ai';
-        errorMessage.innerHTML = `<strong>AI:</strong> Connection to AI backend failed. Please ensure your Termux server is running on http://192.168.1.12:7070`;
-        chatMessages.appendChild(errorMessage);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        displayMessage("AI: Connection to backend failed. Please ensure your Flask server is running on http://192.168.1.12:7070", 'ai');
         console.error('Backend connection error:', error);
       });
+    }
+
+    // Helper function to display messages
+    function displayMessage(message, type) {
+      const chatMessages = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      messageDiv.innerHTML = `<strong>${message}</strong>`;
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     function handleKeyPress(event) {
@@ -663,17 +667,8 @@
       alert('🚀 SPEC GATE Protocol Booting...\n\n⚡ Quantum trading algorithms initializing\n🌌 Connecting to galaxy-wide markets\n🧠 AI analysis engine activated\n\n(Backend integration pending)');
     }
 
-    // Initialize Lottie Animation
-    if (typeof lottie !== 'undefined') {
-      lottie.loadAnimation({
-        container: document.getElementById('ai-avatar'),
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        path: 'https://assets1.lottiefiles.com/packages/lf20_hz6h0huo.json'
-      });
-    }
-
+    // Initialize Lottie Animation (moved to initializeAnimations function)
+    
     // Three.js Enhanced Galaxy Background
     if (typeof THREE !== 'undefined') {
       const scene = new THREE.Scene();
@@ -798,7 +793,31 @@
       });
     }
 
-    // Initialize with home section on page load
-    window.addEventListener("DOMContentLoaded", () => {
+    // Initialize with home section on page load - FIXED!
+    document.addEventListener("DOMContentLoaded", function() {
+      // Ensure showSection is available globally
+      window.showSection = showSection;
+      
+      // Initialize home section
       showSection('home');
+      
+      // Initialize animations
+      initializeAnimations();
     });
+
+    // Separate animation initialization
+    function initializeAnimations() {
+      // Initialize Lottie Animation
+      if (typeof lottie !== 'undefined') {
+        const avatarContainer = document.getElementById('ai-avatar');
+        if (avatarContainer) {
+          lottie.loadAnimation({
+            container: avatarContainer,
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://assets1.lottiefiles.com/packages/lf20_hz6h0huo.json'
+          });
+        }
+      }
+    }
