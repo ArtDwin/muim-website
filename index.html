@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
   <style>
     :root {
       --primary-cyan: #00ffff;
@@ -446,6 +445,48 @@
       white-space: pre-wrap;
     }
 
+    /* SPEC Dashboard */
+    .spec-dashboard {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .spec-dashboard h3 {
+      color: var(--primary-cyan);
+      font-family: 'Orbitron', monospace;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .spec-dashboard canvas {
+      width: 100%;
+      height: 200px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .spec-dashboard button {
+      width: 100%;
+      padding: 0.8rem;
+      background: var(--gradient-1);
+      border: none;
+      border-radius: 8px;
+      color: black;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .spec-dashboard button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
+    }
+
     /* Responsive Design */
     @media (max-width: 1024px) {
       .chat-container {
@@ -537,6 +578,18 @@
             ⚡
           </button>
         </div>
+        
+        <!-- SPEC Mode Toggle Button -->
+        <button onclick="toggleSpecDashboard()" style="margin-top:1rem; width: 100%; padding: 0.8rem; background: var(--gradient-2); border: none; border-radius: 8px; color: black; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+          📊 Enter SPEC Trader Mode
+        </button>
+      </div>
+
+      <!-- SPEC Dashboard (Hidden by default) -->
+      <div id="spec-dashboard" class="spec-dashboard" style="display: none;">
+        <h3>📈 Quantum Trade Dashboard</h3>
+        <canvas id="tradeChart" width="400" height="200"></canvas>
+        <button onclick="reRunTrade()">🔁 Run Trade Again</button>
       </div>
     </div>
 
@@ -572,14 +625,12 @@
       <!-- QASM Response -->
       <div class="qasm-container">
         <div class="qasm-title">🔮 Live Quantum State</div>
-        <div class="qasm-code" id="qasmResponse">
-qreg q[3];
+        <div class="qasm-code" id="qasmResponse">qreg q[3];
 creg c[3];
 h q[0];
 cx q[0], q[1];
 measure q -> c;
-// Entanglement confirms: BULLISH_RESONANCE
-        </div>
+// Entanglement confirms: BULLISH_RESONANCE</div>
       </div>
 
       <!-- Trading Chart -->
@@ -610,7 +661,32 @@ measure q -> c;
     let currentMode = 'oracle';
     let quantumIntensity = 0.73;
     let tradingChart = null;
+    let tradeChart = null;
     let isTyping = false;
+    let tradeHistory = [];
+
+    // AI Response Templates
+    const oracleResponses = [
+      "🔮 The quantum field resonates with your energy. I sense a powerful alignment forming around your trading intentions.",
+      "✨ Your consciousness is shifting the probability waves. The markets are responding to your inner state.",
+      "🌟 The cosmic patterns suggest a breakthrough moment approaching. Trust your intuition.",
+      "⚡ I'm detecting high-frequency resonance in the quantum field. This is an optimal time for manifestation.",
+      "🧬 Your DNA is literally changing as you align with abundance frequencies. The transformation is profound.",
+      "🌀 The spiral dynamics of consciousness are accelerating. You're entering a new phase of awareness.",
+      "💎 Diamond consciousness activated. Your trading decisions now carry crystalline clarity.",
+      "🔥 Phoenix energy detected - old patterns are burning away to reveal your true trading potential."
+    ];
+
+    const traderResponses = [
+      "📈 Quantum analysis indicates a 73% probability of upward momentum in the next 4-6 hours.",
+      "⚡ High-frequency trading patterns suggest accumulation phase. Institutional money is flowing in.",
+      "🎯 Technical analysis through quantum lens reveals hidden support levels at 0.618 Fibonacci.",
+      "🌊 Wave function collapse imminent - prepare for significant price movement within 2 hours.",
+      "🔬 Molecular-level market analysis shows buyer absorption increasing exponentially.",
+      "📊 Consciousness-driven volume spikes detected. Retail sentiment aligning with smart money.",
+      "🎪 Circus top formation dissolving into ascending triangle - bullish divergence confirmed.",
+      "⚛️ Atomic-level volatility compression detected. Explosive move incoming."
+    ];
 
     // Initialize on load
     document.addEventListener('DOMContentLoaded', function() {
@@ -666,41 +742,68 @@ measure q -> c;
       isTyping = true;
       addTypingIndicator();
       
-      try {
-        // Send to Flask backend
-        const response = await fetch('http://192.168.1.12:7070/ask', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({ question: message })
-        });
+      // Simulate AI response with quantum processing delay
+      setTimeout(() => {
+        removeTypingIndicator();
+        
+        // Generate context-aware response
+        let response;
+        const lowerMessage = message.toLowerCase();
+        
+        if (lowerMessage.includes('trade') || lowerMessage.includes('buy') || lowerMessage.includes('sell') || lowerMessage.includes('price')) {
+          response = traderResponses[Math.floor(Math.random() * traderResponses.length)];
+          currentMode = 'trader';
+          updateModeButtons('trader');
+        } else if (lowerMessage.includes('manifest') || lowerMessage.includes('intention') || lowerMessage.includes('energy')) {
+          response = oracleResponses[Math.floor(Math.random() * oracleResponses.length)];
+          currentMode = 'oracle';
+          updateModeButtons('oracle');
+        } else {
+          // Default to current mode response
+          response = currentMode === 'trader' ? 
+            traderResponses[Math.floor(Math.random() * traderResponses.length)] :
+            oracleResponses[Math.floor(Math.random() * oracleResponses.length)];
+        }
+        
+        addMessage(response, 'ai');
+        
+        // Update quantum metrics
+        const newIntensity = 0.3 + Math.random() * 0.7;
+        updateQuantumIntensity(newIntensity);
+        updateQASM(generateQuantumCode());
+        
+        isTyping = false;
+      }, 1500 + Math.random() * 2000);
+    }
 
-        const data = await response.json();
+    // Generate Quantum Code
+    function generateQuantumCode() {
+      const templates = [
+        `qreg q[3];
+creg c[3];
+h q[0];
+cx q[0], q[1];
+measure q -> c;
+// Entanglement confirms: BULLISH_RESONANCE`,
         
-        // Remove typing indicator
-        removeTypingIndicator();
+        `qreg q[4];
+creg c[4];
+ry(π/4) q[0];
+cnot q[0], q[2];
+h q[1];
+measure q -> c;
+// Superposition indicates: ACCUMULATION_PHASE`,
         
-        // Add AI response
-        const aiResponse = data.answer || data.response || data.message || "The quantum consciousness flows through me, but the message seems unclear. Please try again.";
-        addMessage(aiResponse, 'ai');
-        
-        // Update quantum metrics if included
-        if (data.intensity) {
-          updateQuantumIntensity(data.intensity);
-        }
-        if (data.qasm) {
-          updateQASM(data.qasm);
-        }
-        
-      } catch (error) {
-        console.error('Oracle connection error:', error);
-        removeTypingIndicator();
-        addMessage('🔌 The quantum connection has been disrupted. Please ensure the Oracle server is running at port 7070.', 'ai');
-      }
+        `qreg q[2];
+creg c[2];
+x q[0];
+h q[1];
+cz q[0], q[1];
+measure q -> c;
+// Quantum interference: BREAKOUT_IMMINENT`
+      ];
       
-      isTyping = false;
+      return templates[Math.floor(Math.random() * templates.length)];
     }
 
     // Add Message to Chat
@@ -752,164 +855,9 @@ measure q -> c;
     // Mode Switching
     function switchMode(mode) {
       currentMode = mode;
-      document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === mode);
-      });
+      updateModeButtons(mode);
       
       if (mode === 'oracle') {
         addMessage("🔮 Oracle mode activated. I will provide soul-aligned guidance and cosmic insights.", 'ai');
       } else {
-        addMessage("📈 Trader mode activated. Let's analyze the quantum patterns in the markets.", 'ai');
-      }
-    }
-
-    // Quantum Intensity Gauge
-    function initializeIntensityGauge() {
-      updateQuantumIntensity(quantumIntensity);
-    }
-
-    function updateQuantumIntensity(value) {
-      quantumIntensity = Math.max(0, Math.min(1, value));
-      
-      const canvas = document.getElementById('intensityGauge');
-      const ctx = canvas.getContext('2d');
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height - 20;
-      const radius = 80;
-      
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Background arc
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, Math.PI, 0);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-      ctx.lineWidth = 8;
-      ctx.stroke();
-      
-      // Intensity arc
-      const angle = Math.PI * quantumIntensity;
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, Math.PI, Math.PI + angle);
-      
-      const gradient = ctx.createLinearGradient(centerX - radius, centerY, centerX + radius, centerY);
-      gradient.addColorStop(0, '#00ffff');
-      gradient.addColorStop(0.5, '#ff00ff');
-      gradient.addColorStop(1, '#ffd700');
-      
-      ctx.strokeStyle = gradient;
-      ctx.lineWidth = 8;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-      
-      // Update value display
-      document.getElementById('intensityValue').textContent = quantumIntensity.toFixed(2);
-      
-      // Update description
-      const descriptions = [
-        "Low resonance - Markets in discord",
-        "Building alignment - Patterns emerging", 
-        "High resonance - Markets align with intention",
-        "Quantum sync achieved - Maximum manifestation potential"
-      ];
-      const descIndex = Math.floor(quantumIntensity * descriptions.length);
-      document.getElementById('intensityDesc').textContent = descriptions[Math.min(descIndex, descriptions.length - 1)];
-    }
-
-    // Trading Chart
-    function initializeChart() {
-      const ctx = document.getElementById('tradingChart').getContext('2d');
-      
-      // Generate sample data
-      const labels = [];
-      const data = [];
-      const now = new Date();
-      
-      for (let i = 9; i >= 0; i--) {
-        const time = new Date(now.getTime() - i * 60000);
-        labels.push(time.toLocaleTimeString('en-US', { hour12: false, minute: '2-digit', second: '2-digit' }));
-        data.push(Math.random() * 0.6 + 0.2);
-      }
-      
-      tradingChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Quantum Alignment',
-            data: data,
-            borderColor: '#00ffff',
-            backgroundColor: 'rgba(0, 255, 255, 0.1)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointBackgroundColor: '#ff00ff',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false
-            }
-          },
-          scales: {
-            x: {
-              grid: {
-                color: 'rgba(255, 255, 255, 0.1)'
-              },
-              ticks: {
-                color: '#ccc',
-                font: {
-                  size: 10
-                }
-              }
-            },
-            y: {
-              min: 0,
-              max: 1,
-              grid: {
-                color: 'rgba(255, 255, 255, 0.1)'
-              },
-              ticks: {
-                color: '#ccc',
-                font: {
-                  size: 10
-                },
-                callback: function(value) {
-                  return value.toFixed(1);
-                }
-              }
-            }
-          },
-          animation: {
-            duration: 2000,
-            easing: 'easeInOutQuart'
-          }
-        }
-      });
-    }
-
-    // Update QASM Response
-    function updateQASM(qasmCode) {
-      document.getElementById('qasmResponse').textContent = qasmCode;
-    }
-
-    // Action Button Functions
-    function rerunTradeLogic() {
-      addMessage("🔁 Re-running quantum trade analysis...", 'ai');
-      
-      // Simulate new data
-      setTimeout(() => {
-        const newIntensity = Math.random();
-        updateQuantumIntensity(newIntensity);
-        updateChart();
-        
-        const insights = [
-          "Quantum entanglement suggests a bullish reversal pattern emerging.",
-          "Market consciousness is shifting - prepare for volatility.",
-          "The quantum field indicates strong support at current levels.",
-          "
+        addMessage("📈 Trader mode activated. Let's analyze the quantum patterns in the markets.", '
