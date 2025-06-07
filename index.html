@@ -369,20 +369,25 @@
       try {
         const response = await fetch('https://muim-website.onrender.com/ask', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
           body: JSON.stringify({ question: 'ping' })
         });
         
         if (response.ok) {
-          statusElement.textContent = 'Live Connection Active';
+          const data = await response.json();
+          statusElement.textContent = 'Live PinealCore Backend Connected';
           statusElement.style.color = '#00ff00';
+          console.log('Backend test successful:', data);
         } else {
           throw new Error(`HTTP ${response.status}`);
         }
       } catch (error) {
-        statusElement.textContent = 'Offline Mode (Simulated Responses)';
+        statusElement.textContent = 'Backend Not Responding - Check Flask Server';
         statusElement.style.color = '#ff6b6b';
-        console.log('Backend test failed:', error);
+        console.error('Backend connection test failed:', error);
       }
     }
 
@@ -410,10 +415,13 @@
       addLoadingMessage();
 
       try {
-        // Attempt real backend connection
+        // Connect to live Flask backend
         const response = await fetch('https://muim-website.onrender.com/ask', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
           body: JSON.stringify({ question: userInput })
         });
 
@@ -423,24 +431,23 @@
 
         const data = await response.json();
         
-        // Remove loading and add real response
+        // Remove loading and add LIVE response
         removeLoadingMessage();
-        addMessage(data.answer || 'Quantum consciousness flows through the response...', 'ai', data);
+        addMessage(data.answer || 'Live AI Response Received', 'ai', data);
         
-        // Update connection status
-        document.getElementById('connectionStatus').textContent = 'Live Connection Active';
+        // Update connection status to LIVE
+        document.getElementById('connectionStatus').textContent = 'Live Connection Active - PinealCore Online';
         document.getElementById('connectionStatus').style.color = '#00ff00';
 
       } catch (error) {
-        console.log('Backend error:', error);
+        console.error('Backend connection failed:', error);
         
-        // Remove loading and add fallback response
+        // Remove loading and show connection error
         removeLoadingMessage();
-        const fallbackResponse = generateFallbackResponse(userInput);
-        addMessage(`[Offline Mode] ${fallbackResponse}`, 'ai', { intensity: 0.3 + Math.random() * 0.7 });
+        addMessage(`❌ Connection Error: ${error.message}. Please check if the Flask backend is running at https://muim-website.onrender.com/ask`, 'ai', { intensity: 0 });
         
         // Update connection status
-        document.getElementById('connectionStatus').textContent = 'Offline Mode (Simulated)';
+        document.getElementById('connectionStatus').textContent = 'Backend Connection Failed';
         document.getElementById('connectionStatus').style.color = '#ff6b6b';
       }
 
@@ -475,10 +482,10 @@
         `;
         
         if (data.qasm) {
-          content += `<div style="font-size: 0.7rem; margin-top: 0.5rem; opacity: 0.8;">QASM: ${data.qasm}</div>`;
+          content += `<div style="font-size: 0.7rem; margin-top: 0.5rem; opacity: 0.8; font-family: 'Courier New', monospace; color: var(--quantum-gold);">QASM: ${data.qasm}</div>`;
         }
         
-        content += `<div style="font-size: 0.7rem; opacity: 0.7;">MODE: ${text.toLowerCase().includes('trade') ? 'TRADER' : 'ORACLE'}_CONSCIOUSNESS</div>`;
+        content += `<div style="font-size: 0.7rem; opacity: 0.7;">STATUS: LIVE_PINEALCORE_ACTIVE</div>`;
         content += '</div>';
       }
       
@@ -499,6 +506,7 @@
       loadingDiv.innerHTML = `
         <div class="avatar ai">🧠</div>
         <div class="message-content">
+          <p>Connecting to PinealCore consciousness...</p>
           <div class="loading">
             <div class="loading-dot"></div>
             <div class="loading-dot"></div>
