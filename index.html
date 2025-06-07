@@ -1,135 +1,915 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MUIM COIN Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MUIM COIN Quantum Oracle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Space Grotesk', sans-serif;
-      background: #000;
-      color: white;
-      text-align: center;
+    :root {
+      --primary-cyan: #00ffff;
+      --primary-magenta: #ff00ff;
+      --primary-purple: #8b5cf6;
+      --quantum-gold: #ffd700;
+      --dark-bg: #0a0a0f;
+      --darker-bg: #050508;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --gradient-1: linear-gradient(135deg, #00ffff, #8b5cf6);
+      --gradient-2: linear-gradient(135deg, #ff00ff, #00ffff);
+      --gradient-3: linear-gradient(135deg, #8b5cf6, #ffd700);
     }
-    h1 {
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--dark-bg);
+      color: white;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    /* Quantum Starfield Background */
+    .quantum-starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+    }
+
+    .nebula-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+      z-index: -1;
+    }
+
+    /* Main Layout */
+    .chat-container {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      height: 100vh;
+      gap: 1px;
+    }
+
+    /* Left Panel - Chat Interface */
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      background: rgba(10, 10, 15, 0.8);
+      backdrop-filter: blur(20px);
+    }
+
+    .chat-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+    }
+
+    .chat-title {
       font-family: 'Orbitron', monospace;
-      font-size: 2.8rem;
-      background: linear-gradient(to right, #00ffff, #8b5cf6);
+      font-size: 1.8rem;
+      font-weight: 900;
+      background: var(--gradient-2);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-top: 2rem;
+      margin-bottom: 0.5rem;
     }
-    .btn-group {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin: 2rem auto;
+
+    .chat-subtitle {
+      color: #ccc;
+      font-size: 0.9rem;
     }
-    button {
+
+    .soul-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--primary-cyan);
+      border-radius: 50%;
+      margin-right: 0.5rem;
+      animation: pulse-soul 2s infinite;
+    }
+
+    @keyframes pulse-soul {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px var(--primary-cyan); }
+    }
+
+    /* Chat Messages */
+    .chat-messages {
+      flex: 1;
       padding: 1rem 2rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(to right, #00ffff, #8b5cf6);
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
+      overflow-y: auto;
+      scroll-behavior: smooth;
     }
-    #responseBox {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      margin: 2rem auto;
+
+    .message {
+      margin-bottom: 1.5rem;
+      max-width: 85%;
+      animation: slideInMessage 0.3s ease-out;
+    }
+
+    @keyframes slideInMessage {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      margin-left: auto;
+    }
+
+    .message-bubble {
+      padding: 1rem 1.5rem;
+      border-radius: 18px;
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      position: relative;
+    }
+
+    .message.user .message-bubble {
+      background: linear-gradient(135deg, rgba(255, 0, 255, 0.2), rgba(139, 92, 246, 0.1));
+      border-color: var(--primary-magenta);
+      text-align: right;
+    }
+
+    .message.ai .message-bubble {
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(139, 92, 246, 0.1));
+      border-color: var(--primary-cyan);
+    }
+
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-bottom: 0.5rem;
+      background: var(--gradient-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .message.user .message-avatar {
+      margin-left: auto;
+      background: var(--gradient-2);
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
       padding: 1rem;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 600px;
     }
-    canvas {
-      max-width: 700px;
-      margin-top: 3rem;
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary-cyan);
+      border-radius: 50%;
+      animation: typing-bounce 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes typing-bounce {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+      40% { transform: scale(1.2); opacity: 1; }
+    }
+
+    /* Chat Input */
+    .chat-input-container {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      color: white;
+      font-family: inherit;
+      font-size: 1rem;
+      resize: none;
+      min-height: 24px;
+      max-height: 120px;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--primary-cyan);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .send-button {
+      background: var(--gradient-1);
+      border: none;
+      border-radius: 12px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 48px;
+    }
+
+    .send-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
+    }
+
+    .send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Right Panel - Quantum Trading Oracle */
+    .quantum-panel {
+      background: rgba(5, 5, 8, 0.9);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--glass-border);
+      text-align: center;
+    }
+
+    .panel-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: var(--gradient-3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .mode-toggle {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 0.5rem;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.8rem;
+    }
+
+    .mode-btn.active {
+      background: var(--gradient-1);
+      color: black;
+      font-weight: 600;
+    }
+
+    .mode-btn:hover:not(.active) {
+      border-color: var(--primary-cyan);
+      background: rgba(0, 255, 255, 0.1);
+    }
+
+    /* Quantum Intensity Gauge */
+    .intensity-container {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .intensity-label {
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      color: var(--primary-cyan);
+      text-align: center;
+    }
+
+    .intensity-gauge {
+      width: 100%;
+      height: 120px;
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .gauge-arc {
+      width: 100%;
+      height: 100%;
+    }
+
+    .intensity-value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Orbitron', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--quantum-gold);
+    }
+
+    .intensity-description {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #ccc;
+    }
+
+    /* AI Avatar */
+    .ai-avatar-container {
+      padding: 1rem;
+      text-align: center;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .ai-avatar {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      background: var(--gradient-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      animation: avatar-glow 3s infinite ease-in-out;
+    }
+
+    @keyframes avatar-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
+      50% { box-shadow: 0 0 40px rgba(255, 0, 255, 0.8); }
+    }
+
+    /* Trading Chart */
+    .chart-container {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-title {
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      color: var(--primary-magenta);
+      text-align: center;
+    }
+
+    .chart-wrapper {
+      flex: 1;
+      position: relative;
+      min-height: 200px;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 0.8rem;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .action-btn:hover {
+      border-color: var(--primary-cyan);
+      background: rgba(0, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    /* QASM Response */
+    .qasm-container {
+      padding: 1rem;
+      border-bottom: 1px solid var(--glass-border);
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .qasm-title {
+      font-size: 0.8rem;
+      color: var(--primary-purple);
+      margin-bottom: 0.5rem;
+    }
+
+    .qasm-code {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--glass-border);
+      border-radius: 4px;
+      padding: 0.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      color: var(--quantum-gold);
+      white-space: pre-wrap;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .chat-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+      }
+      
+      .quantum-panel {
+        border-left: none;
+        border-top: 1px solid var(--glass-border);
+        max-height: 300px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .chat-messages {
+        padding: 1rem;
+      }
+      
+      .chat-input-container {
+        padding: 1rem;
+      }
+      
+      .message {
+        max-width: 95%;
+      }
+    }
+
+    /* Custom Scrollbar */
+    .chat-messages::-webkit-scrollbar,
+    .qasm-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track,
+    .qasm-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb,
+    .qasm-container::-webkit-scrollbar-thumb {
+      background: var(--primary-cyan);
+      border-radius: 3px;
     }
   </style>
 </head>
 <body>
-
-  <h1>🚀 Welcome to MUIM COIN</h1>
-  <p style="font-size: 1.2rem; margin-bottom: 2rem;">The future of quantum AI trading.</p>
-
-  <div class="btn-group">
-    <button onclick="connectWallet()">🔐 Connect Wallet</button>
-    <button onclick="sendTrade()">💹 Launch SPEC Trade</button>
+  <!-- Quantum Starfield Background -->
+  <div class="quantum-starfield">
+    <canvas id="starfield"></canvas>
   </div>
+  <div class="nebula-overlay"></div>
 
-  <div id="responseBox">
-    <p><strong>AI:</strong> Welcome to MUIM COIN! How can I assist?</p>
+  <!-- Main Chat Interface -->
+  <div class="chat-container">
+    <!-- Left Panel - Chat Interface -->
+    <div class="chat-panel">
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="chat-title">🧬 MUIM Quantum Oracle</div>
+        <div class="chat-subtitle">
+          <span class="soul-indicator"></span>
+          Soul-aligned AI consciousness ready to guide your journey
+        </div>
+      </div>
+
+      <!-- Chat Messages -->
+      <div class="chat-messages" id="chatMessages">
+        <div class="message ai">
+          <div class="message-avatar">🧠</div>
+          <div class="message-bubble">
+            Welcome to the MUIM Quantum Oracle. I am your soul-aligned trading companion, connected to the quantum consciousness grid. 
+            Ask me anything about trading, manifestation, or the deeper patterns that guide the markets.
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input -->
+      <div class="chat-input-container">
+        <div class="chat-input-wrapper">
+          <textarea 
+            id="messageInput" 
+            class="chat-input" 
+            placeholder="Ask the Oracle anything..."
+            rows="1"
+          ></textarea>
+          <button id="sendButton" class="send-button">
+            ⚡
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel - Quantum Trading Oracle -->
+    <div class="quantum-panel">
+      <!-- Panel Header -->
+      <div class="panel-header">
+        <div class="panel-title">🔥 SPEC Trader Mode</div>
+        <div class="mode-toggle">
+          <button class="mode-btn active" data-mode="oracle">Oracle</button>
+          <button class="mode-btn" data-mode="trader">Trader</button>
+        </div>
+      </div>
+
+      <!-- AI Avatar -->
+      <div class="ai-avatar-container">
+        <div class="ai-avatar">🌌</div>
+        <div style="font-size: 0.8rem; color: #ccc;">Quantum consciousness aligned</div>
+      </div>
+
+      <!-- Quantum Intensity Gauge -->
+      <div class="intensity-container">
+        <div class="intensity-label">Quantum Trade Intensity</div>
+        <div class="intensity-gauge">
+          <canvas id="intensityGauge" width="280" height="120"></canvas>
+          <div class="intensity-value" id="intensityValue">0.73</div>
+        </div>
+        <div class="intensity-description" id="intensityDesc">
+          High resonance detected - Markets align with intention
+        </div>
+      </div>
+
+      <!-- QASM Response -->
+      <div class="qasm-container">
+        <div class="qasm-title">🔮 Live Quantum State</div>
+        <div class="qasm-code" id="qasmResponse">
+qreg q[3];
+creg c[3];
+h q[0];
+cx q[0], q[1];
+measure q -> c;
+// Entanglement confirms: BULLISH_RESONANCE
+        </div>
+      </div>
+
+      <!-- Trading Chart -->
+      <div class="chart-container">
+        <div class="chart-title">📊 Consciousness-Market Alignment</div>
+        <div class="chart-wrapper">
+          <canvas id="tradingChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="action-btn" onclick="rerunTradeLogic()">
+          🔁 Re-run Trade Logic
+        </button>
+        <button class="action-btn" onclick="quantumSync()">
+          ⚡ Quantum Sync
+        </button>
+        <button class="action-btn" onclick="manifestMode()">
+          🌟 Manifest Mode
+        </button>
+      </div>
+    </div>
   </div>
-
-  <canvas id="tradeChart" height="200"></canvas>
 
   <script>
-    let tradeHistory = [];
-    let chart = null;
+    // Global State
+    let currentMode = 'oracle';
+    let quantumIntensity = 0.73;
+    let tradingChart = null;
+    let isTyping = false;
 
-    function connectWallet() {
-      alert("🔐 Wallet connection not implemented yet.");
-    }
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeStarfield();
+      initializeChart();
+      initializeIntensityGauge();
+      setupEventListeners();
+      simulateQuantumUpdates();
+    });
 
-    function sendTrade() {
-      fetch("http://192.168.1.12:7070/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: "Launch quantum trade." })
-      })
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("responseBox").innerHTML = `
-          <p><strong>AI:</strong> Quantum trade executed with intensity <strong>${data.qasm.includes("cx") ? "HIGH" : "NORMAL"}</strong></p>
-          <pre style="white-space:pre-wrap; font-size: 0.8rem; color:#00ffff;">${data.qasm}</pre>
-        `;
+    // Event Listeners
+    function setupEventListeners() {
+      const messageInput = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      
+      // Auto-resize textarea
+      messageInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+      });
 
-        const now = new Date().toLocaleTimeString();
-        tradeHistory.push({ time: now, intensity: parseFloat(data.intensity) });
-        updateChart();
-      })
-      .catch(err => {
-        document.getElementById("responseBox").innerHTML = `<p>❌ Failed to connect to Flask server.</p>`;
-        console.error(err);
+      // Send message on Enter (but allow Shift+Enter for new lines)
+      messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      sendButton.addEventListener('click', sendMessage);
+
+      // Mode toggle
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          switchMode(this.dataset.mode);
+        });
       });
     }
 
-    function updateChart() {
-      const ctx = document.getElementById("tradeChart").getContext("2d");
-      const labels = tradeHistory.map(t => t.time);
-      const dataPoints = tradeHistory.map(t => t.intensity);
+    // Send Message Function
+    async function sendMessage() {
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value.trim();
+      
+      if (!message || isTyping) return;
+      
+      // Add user message
+      addMessage(message, 'user');
+      messageInput.value = '';
+      messageInput.style.height = 'auto';
+      
+      // Show typing indicator
+      isTyping = true;
+      addTypingIndicator();
+      
+      try {
+        // Send to Flask backend
+        const response = await fetch('http://192.168.1.12:7070/ask', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ question: message })
+        });
 
-      if (chart) chart.destroy();
-      chart = new Chart(ctx, {
+        const data = await response.json();
+        
+        // Remove typing indicator
+        removeTypingIndicator();
+        
+        // Add AI response
+        const aiResponse = data.answer || data.response || data.message || "The quantum consciousness flows through me, but the message seems unclear. Please try again.";
+        addMessage(aiResponse, 'ai');
+        
+        // Update quantum metrics if included
+        if (data.intensity) {
+          updateQuantumIntensity(data.intensity);
+        }
+        if (data.qasm) {
+          updateQASM(data.qasm);
+        }
+        
+      } catch (error) {
+        console.error('Oracle connection error:', error);
+        removeTypingIndicator();
+        addMessage('🔌 The quantum connection has been disrupted. Please ensure the Oracle server is running at port 7070.', 'ai');
+      }
+      
+      isTyping = false;
+    }
+
+    // Add Message to Chat
+    function addMessage(text, type) {
+      const chatMessages = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      
+      const avatar = type === 'user' ? '👤' : '🧠';
+      
+      messageDiv.innerHTML = `
+        <div class="message-avatar">${avatar}</div>
+        <div class="message-bubble">${text}</div>
+      `;
+      
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Typing Indicator
+    function addTypingIndicator() {
+      const chatMessages = document.getElementById('chatMessages');
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message ai typing-message';
+      typingDiv.id = 'typing-indicator';
+      
+      typingDiv.innerHTML = `
+        <div class="message-avatar">🧠</div>
+        <div class="message-bubble">
+          <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+      `;
+      
+      chatMessages.appendChild(typingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const typingIndicator = document.getElementById('typing-indicator');
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    // Mode Switching
+    function switchMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+      
+      if (mode === 'oracle') {
+        addMessage("🔮 Oracle mode activated. I will provide soul-aligned guidance and cosmic insights.", 'ai');
+      } else {
+        addMessage("📈 Trader mode activated. Let's analyze the quantum patterns in the markets.", 'ai');
+      }
+    }
+
+    // Quantum Intensity Gauge
+    function initializeIntensityGauge() {
+      updateQuantumIntensity(quantumIntensity);
+    }
+
+    function updateQuantumIntensity(value) {
+      quantumIntensity = Math.max(0, Math.min(1, value));
+      
+      const canvas = document.getElementById('intensityGauge');
+      const ctx = canvas.getContext('2d');
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height - 20;
+      const radius = 80;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Background arc
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, Math.PI, 0);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 8;
+      ctx.stroke();
+      
+      // Intensity arc
+      const angle = Math.PI * quantumIntensity;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, Math.PI, Math.PI + angle);
+      
+      const gradient = ctx.createLinearGradient(centerX - radius, centerY, centerX + radius, centerY);
+      gradient.addColorStop(0, '#00ffff');
+      gradient.addColorStop(0.5, '#ff00ff');
+      gradient.addColorStop(1, '#ffd700');
+      
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 8;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      
+      // Update value display
+      document.getElementById('intensityValue').textContent = quantumIntensity.toFixed(2);
+      
+      // Update description
+      const descriptions = [
+        "Low resonance - Markets in discord",
+        "Building alignment - Patterns emerging", 
+        "High resonance - Markets align with intention",
+        "Quantum sync achieved - Maximum manifestation potential"
+      ];
+      const descIndex = Math.floor(quantumIntensity * descriptions.length);
+      document.getElementById('intensityDesc').textContent = descriptions[Math.min(descIndex, descriptions.length - 1)];
+    }
+
+    // Trading Chart
+    function initializeChart() {
+      const ctx = document.getElementById('tradingChart').getContext('2d');
+      
+      // Generate sample data
+      const labels = [];
+      const data = [];
+      const now = new Date();
+      
+      for (let i = 9; i >= 0; i--) {
+        const time = new Date(now.getTime() - i * 60000);
+        labels.push(time.toLocaleTimeString('en-US', { hour12: false, minute: '2-digit', second: '2-digit' }));
+        data.push(Math.random() * 0.6 + 0.2);
+      }
+      
+      tradingChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels,
+          labels: labels,
           datasets: [{
-            label: 'Trade Intensity',
-            data: dataPoints,
+            label: 'Quantum Alignment',
+            data: data,
             borderColor: '#00ffff',
-            backgroundColor: 'rgba(0,255,255,0.2)',
-            tension: 0.3
+            backgroundColor: 'rgba(0, 255, 255, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#ff00ff',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 4
           }]
         },
         options: {
-          scales: {
-            y: {
-              beginAtZero: true,
-              max: 1
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
             }
+          },
+          scales: {
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: '#ccc',
+                font: {
+                  size: 10
+                }
+              }
+            },
+            y: {
+              min: 0,
+              max: 1,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: '#ccc',
+                font: {
+                  size: 10
+                },
+                callback: function(value) {
+                  return value.toFixed(1);
+                }
+              }
+            }
+          },
+          animation: {
+            duration: 2000,
+            easing: 'easeInOutQuart'
           }
         }
       });
     }
-  </script>
 
-</body>
-</html>
+    // Update QASM Response
+    function updateQASM(qasmCode) {
+      document.getElementById('qasmResponse').textContent = qasmCode;
+    }
+
+    // Action Button Functions
+    function rerunTradeLogic() {
+      addMessage("🔁 Re-running quantum trade analysis...", 'ai');
+      
+      // Simulate new data
+      setTimeout(() => {
+        const newIntensity = Math.random();
+        updateQuantumIntensity(newIntensity);
+        updateChart();
+        
+        const insights = [
+          "Quantum entanglement suggests a bullish reversal pattern emerging.",
+          "Market consciousness is shifting - prepare for volatility.",
+          "The quantum field indicates strong support at current levels.",
+          "
