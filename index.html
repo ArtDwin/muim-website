@@ -22,6 +22,191 @@
       --gradient-3: linear-gradient(135deg, #8b5cf6, #ffd700);
     }
 
+    // SPEC Dashboard Functions
+    function showDashboard() {
+      const dashboard = document.getElementById("spec-dashboard");
+      if (dashboard) {
+        dashboard.style.display = "block";
+        addMessage("📊 SPEC Trader Mode activated! Quantum trade dashboard is now live.", 'ai');
+        
+        // Initialize trade chart if not already done
+        if (!tradeChart) {
+          initializeTradeChart();
+        }
+      }
+    }
+
+    function reRunTrade() {
+      addMessage("🔁 Re-running quantum trade analysis...", 'ai');
+      
+      // Attempt to connect to Flask server for real-time trading
+      fetch("http://192.168.1.12:7070/ask", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ question: "Launch quantum trade" })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        const now = new Date().toLocaleTimeString();
+        const intensity = parseFloat(data.intensity) || (0.2 + Math.random() * 0.8);
+        
+        tradeHistory.push({ 
+          time: now, 
+          intensity: intensity,
+          outcome: data.answer || "QUANTUM_TRADE_EXECUTED",
+          profit: (Math.random() - 0.3) * 15
+        });
+        
+        updateTradeChart();
+        updateQuantumIntensity(intensity);
+        
+        if (data.qasm) {
+          updateQASM(data.qasm);
+        }
+        
+        // Parse trading result from response
+        const tradingTerms = ['bullish', 'bearish', 'breakout', 'resistance', 'support', 'momentum'];
+        const responseText = (data.answer || '').toLowerCase();
+        const hasTradeInfo = tradingTerms.some(term => responseText.includes(term));
+        
+        if (hasTradeInfo) {
+          addMessage(`⚡ Live server response: ${data.answer} | Intensity: ${intensity.toFixed(3)}`, 'ai');
+        } else {
+          addMessage(`⚡ Quantum trade executed successfully | Intensity: ${intensity.toFixed(3)} | Server: Connected`, 'ai');
+        }
+      })
+      .catch(err => {
+        // Fallback to simulated trade logic when server is offline
+        console.log("Server offline, using simulated quantum processing:", err.message);
+        
+        setTimeout(() => {
+          const tradeResult = generateTradeResult();
+          const now = new Date().toLocaleTimeString();
+          tradeHistory.push({ 
+            time: now, 
+            intensity: tradeResult.intensity,
+            outcome: tradeResult.outcome,
+            profit: tradeResult.profit
+          });
+          
+          updateTradeChart();
+          updateQuantumIntensity(tradeResult.intensity);
+          updateQASM(tradeResult.qasm);
+          
+          addMessage(`🔌 [Offline] Quantum trade executed: ${tradeResult.outcome} | Intensity: ${tradeResult.intensity.toFixed(3)} | Result: ${tradeResult.profit > 0 ? '+' : ''}${tradeResult.profit.toFixed(2)}%`, 'ai');
+        }, 1000);
+      });
+    }
+
+    function generateTradeResult() {
+      const outcomes = ['BULLISH_BREAKOUT', 'ACCUMULATION_PHASE', 'RESISTANCE_TEST', 'MOMENTUM_SURGE', 'QUANTUM_SYNC'];
+      const intensity = 0.2 + Math.random() * 0.8;
+      const profit = (Math.random() - 0.3) * 15; // -4.5% to +10.5% range
+      
+      const qasm = `qreg q[4];
+creg c[4];
+ry(${(intensity * Math.PI).toFixed(3)}) q[0];
+cnot q[0], q[2];
+h q[1];
+cz q[1], q[3];
+measure q -> c;
+// Trade result: ${outcomes[Math.floor(Math.random() * outcomes.length)]}`;
+
+      return {
+        intensity,
+        outcome: outcomes[Math.floor(Math.random() * outcomes.length)],
+        profit,
+        qasm
+      };
+    }
+
+    function initializeTradeChart() {
+      const ctx = document.getElementById("tradeChart").getContext("2d");
+      
+      tradeChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Quantum Trade Intensity',
+            data: [],
+            borderColor: '#00ffff',
+            backgroundColor: 'rgba(0, 255, 255, 0.2)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#ff00ff',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#fff'
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: '#ccc',
+                font: {
+                  size: 11
+                }
+              }
+            },
+            y: {
+              min: 0,
+              max: 1,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: '#ccc',
+                font: {
+                  size: 11
+                },
+                callback: function(value) {
+                  return value.toFixed(1);
+                }
+              }
+            }
+          },
+          animation: {
+            duration: 1500,
+            easing: 'easeInOutQuart'
+          }
+        }
+      });
+    }
+
+    function updateTradeChart() {
+      if (!tradeChart) return;
+      
+      const labels = tradeHistory.slice(-10).map(t => t.time);
+      const dataPoints = tradeHistory.slice(-10).map(t => t.intensity);
+      
+      tradeChart.data.labels = labels;
+      tradeChart.data.datasets[0].data = dataPoints;
+      tradeChart.update('active');
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -580,7 +765,7 @@
         </div>
         
         <!-- SPEC Mode Toggle Button -->
-        <button onclick="toggleSpecDashboard()" style="margin-top:1rem; width: 100%; padding: 0.8rem; background: var(--gradient-2); border: none; border-radius: 8px; color: black; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+        <button onclick="showDashboard()" style="margin-top:1rem; width: 100%; padding: 0.8rem; background: var(--gradient-2); border: none; border-radius: 8px; color: black; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
           📊 Enter SPEC Trader Mode
         </button>
       </div>
@@ -589,7 +774,7 @@
       <div id="spec-dashboard" class="spec-dashboard" style="display: none;">
         <h3>📈 Quantum Trade Dashboard</h3>
         <canvas id="tradeChart" width="400" height="200"></canvas>
-        <button onclick="reRunTrade()">🔁 Run Trade Again</button>
+        <button onclick="reRunTrade()">🔁 Run Quantum Trade</button>
       </div>
     </div>
 
@@ -742,38 +927,100 @@ measure q -> c;
       isTyping = true;
       addTypingIndicator();
       
-      // Simulate AI response with quantum processing delay
-      setTimeout(() => {
+      try {
+        // Attempt real-time connection to Flask backend
+        const response = await fetch('http://192.168.1.12:7070/ask', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ question: message })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        // Remove typing indicator
         removeTypingIndicator();
         
-        // Generate context-aware response
-        let response;
-        const lowerMessage = message.toLowerCase();
+        // Add real AI response from Flask backend
+        const aiResponse = data.answer || data.response || data.message || "The quantum consciousness flows through me, but the message seems unclear. Please try again.";
+        addMessage(aiResponse, 'ai');
         
-        if (lowerMessage.includes('trade') || lowerMessage.includes('buy') || lowerMessage.includes('sell') || lowerMessage.includes('price')) {
-          response = traderResponses[Math.floor(Math.random() * traderResponses.length)];
-          currentMode = 'trader';
-          updateModeButtons('trader');
-        } else if (lowerMessage.includes('manifest') || lowerMessage.includes('intention') || lowerMessage.includes('energy')) {
-          response = oracleResponses[Math.floor(Math.random() * oracleResponses.length)];
-          currentMode = 'oracle';
-          updateModeButtons('oracle');
-        } else {
-          // Default to current mode response
-          response = currentMode === 'trader' ? 
-            traderResponses[Math.floor(Math.random() * traderResponses.length)] :
-            oracleResponses[Math.floor(Math.random() * oracleResponses.length)];
+        // Update quantum metrics from real backend data
+        if (data.intensity !== undefined) {
+          const intensity = parseFloat(data.intensity);
+          updateQuantumIntensity(intensity);
+          
+          // Add to trade history for charts
+          const now = new Date().toLocaleTimeString();
+          tradeHistory.push({ time: now, intensity: intensity });
+          if (tradeChart) updateTradeChart();
         }
         
-        addMessage(response, 'ai');
+        // Update QASM code if provided
+        if (data.qasm) {
+          updateQASM(data.qasm);
+        }
         
-        // Update quantum metrics
-        const newIntensity = 0.3 + Math.random() * 0.7;
-        updateQuantumIntensity(newIntensity);
-        updateQASM(generateQuantumCode());
+        // Auto-switch mode based on response context
+        const lowerResponse = aiResponse.toLowerCase();
+        if (lowerResponse.includes('trade') || lowerResponse.includes('buy') || lowerResponse.includes('sell') || lowerResponse.includes('price')) {
+          currentMode = 'trader';
+          updateModeButtons('trader');
+        } else if (lowerResponse.includes('manifest') || lowerResponse.includes('oracle') || lowerResponse.includes('consciousness')) {
+          currentMode = 'oracle';
+          updateModeButtons('oracle');
+        }
         
-        isTyping = false;
-      }, 1500 + Math.random() * 2000);
+      } catch (error) {
+        console.log('Flask server offline, falling back to simulated responses:', error.message);
+        
+        // Fallback to simulated AI response
+        setTimeout(() => {
+          removeTypingIndicator();
+          
+          // Generate context-aware response
+          let response;
+          const lowerMessage = message.toLowerCase();
+          
+          if (lowerMessage.includes('trade') || lowerMessage.includes('buy') || lowerMessage.includes('sell') || lowerMessage.includes('price')) {
+            response = traderResponses[Math.floor(Math.random() * traderResponses.length)];
+            currentMode = 'trader';
+            updateModeButtons('trader');
+          } else if (lowerMessage.includes('manifest') || lowerMessage.includes('intention') || lowerMessage.includes('energy')) {
+            response = oracleResponses[Math.floor(Math.random() * oracleResponses.length)];
+            currentMode = 'oracle';
+            updateModeButtons('oracle');
+          } else {
+            // Default to current mode response
+            response = currentMode === 'trader' ? 
+              traderResponses[Math.floor(Math.random() * traderResponses.length)] :
+              oracleResponses[Math.floor(Math.random() * oracleResponses.length)];
+          }
+          
+          // Add offline indicator to response
+          response = "🔌 [Offline Mode] " + response;
+          addMessage(response, 'ai');
+          
+          // Update quantum metrics with simulated data
+          const newIntensity = 0.3 + Math.random() * 0.7;
+          updateQuantumIntensity(newIntensity);
+          updateQASM(generateQuantumCode());
+          
+          // Add to trade history
+          const now = new Date().toLocaleTimeString();
+          tradeHistory.push({ time: now, intensity: newIntensity });
+          if (tradeChart) updateTradeChart();
+          
+        }, 1500 + Math.random() * 2000);
+      }
+      
+      isTyping = false;
     }
 
     // Generate Quantum Code
@@ -860,4 +1107,12 @@ measure q -> c;
       if (mode === 'oracle') {
         addMessage("🔮 Oracle mode activated. I will provide soul-aligned guidance and cosmic insights.", 'ai');
       } else {
-        addMessage("📈 Trader mode activated. Let's analyze the quantum patterns in the markets.", '
+        addMessage("📈 Trader mode activated. Let's analyze the quantum patterns in the markets.", 'ai');
+      }
+    }
+
+    function updateModeButtons(mode) {
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+    }
