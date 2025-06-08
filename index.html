@@ -1,29 +1,15 @@
-# Repo: ArtDwin/muim-website
-# This is a pure frontend site—no Docker, no Python, no backend.
-
-# 1. Leave every line of index.html exactly as-is.
-# 2. Do NOT add requirements.txt or Dockerfile.
-# 3. Do NOT configure a Web Service on Render.
-
-# Instead, we will use Render’s Static Site feature:
-#   • Build Command: (leave blank)
-#   • Publish Directory: .
-
-# Once deployed, the site will be available at:
-#    https://muim-website.onrender.com
-
-# Here is the one file you should output, verbatim:
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MUIM Galaxy Portal – Quantum Oracle</title>
-  <!-- Google Fonts & Lottie/Three -->
+
+  <!-- Google Fonts & Lottie/Three for starfield if you like -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
   <style>
     :root {
       --primary-cyan: #00ffff;
@@ -192,11 +178,279 @@
       box-shadow:0 20px 60px rgba(0,255,255,0.2);
       animation:chat-appear 0.5s cubic-bezier(0.4,0,0.2,1);
     }
-    @keyframes chat-appear{from{opacity:0;transform:scale(0.8) translateY(50px)}to{opacity:1;.transform:scale(1) translateY(0)}
-    }  
+    @keyframes chat-appear{from{opacity:0;transform:scale(0.8) translateY(50px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .chat-header {
+      padding:1.5rem 2rem; background:var(--glass-bg);
+      border-bottom:1px solid var(--glass-border);
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .chat-title {
+      font-family:'Orbitron',monospace; font-size:1.3rem;
+      background:var(--consciousness-gradient);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .close-chat {
+      background:none; border:none; color:#ccc; font-size:1.5rem; cursor:pointer;
+      transition:0.3s; padding:0.5rem; border-radius:50%;
+    }
+    .close-chat:hover { color:var(--primary-cyan); background:var(--glass-bg); transform:rotate(90deg); }
+
+    .chat-messages {
+      flex:1; padding:2rem; overflow-y:auto; scroll-behavior:smooth;
+      background:linear-gradient(135deg,rgba(0,0,0,0.2),rgba(10,10,15,0.3));
+    }
+    .message { margin-bottom:1.5rem; display:flex; gap:0.75rem; }
+    .message.user { justify-content:flex-end; }
+    .message.ai   { justify-content:flex-start; }
+    .message-avatar {
+      width:32px; height:32px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center; font-size:1.2rem;
+    }
+    .message.user .message-avatar { background:var(--gradient-2); order:2; }
+    .message.ai   .message-avatar { background:var(--gradient-1); }
+    .message-content {
+      max-width:70%; padding:1rem 1.5rem; border-radius:18px; line-height:1.5;
+    }
+    .message.user .message-content {
+      background:linear-gradient(135deg,var(--primary-magenta),var(--primary-purple)); color:white;
+    }
+    .message.ai .message-content {
+      background:var(--glass-bg); border:1px solid var(--glass-border); color:white;
+    }
+
+    .typing-indicator { display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem; }
+    .typing-dots {
+      display:flex; gap:4px; padding:1rem 1.5rem; background:var(--glass-bg); border-radius:18px;
+    }
+    .typing-dot {
+      width:8px; height:8px; background:var(--primary-cyan); border-radius:50%;
+      animation:typing-bounce 1.4s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(1){animation-delay:-0.32s}
+    .typing-dot:nth-child(2){animation-delay:-0.16s}
+    .typing-dot:nth-child(3){animation-delay:0}
+    @keyframes typing-bounce{0%,80%,100%{transform:scale(0.8);opacity:0.5}40%{transform:scale(1.2);opacity:1}}
+
+    .chat-input-area { padding:1.5rem 2rem; background:var(--glass-bg); border-top:1px solid var(--glass-border); }
+    .input-wrapper { display:flex; gap:1rem; align-items:flex-end; }
+    .chat-input {
+      flex:1; background:rgba(255,255,255,0.1); border:1px solid var(--glass-border);
+      border-radius:12px; padding:1rem 1.5rem; color:white; font-size:1rem; resize:none;
+    }
+    .send-button {
+      background:var(--gradient-1); border:none; border-radius:12px; padding:1rem 1.5rem;
+      font-weight:600; cursor:pointer; transition:0.3s;
+    }
+
+    footer {
+      background:linear-gradient(135deg,#050508 0%,#0a0a0f 100%);
+      padding:3rem 2rem 2rem; border-top:1px solid var(--glass-border);
+      margin-top:4rem;
+    }
+    .footer-grid {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:2rem;
+      max-width:1200px; margin:auto;
+    }
+    .footer-section h3 { color:var(--primary-cyan); font-family:'Orbitron',monospace; margin-bottom:1rem; }
+    .footer-section a { display:block; color:#ccc; text-decoration:none; margin-bottom:0.5rem; }
   </style>
 </head>
 <body>
-  <!-- ...rest of your body and scripts unchanged... -->
+
+  <div class="starfield"><canvas id="bgCanvas"></canvas></div>
+
+  <header>
+    <div class="nav">
+      <div class="logo">🧬 MUIM CONSCIOUSNESS</div>
+      <ul class="nav-links">
+        <li><a href="#" onclick="showSection('home')">Home</a></li>
+        <li><a href="#" onclick="openChat()">AI Oracle</a></li>
+        <li><a href="#" onclick="showSection('features')">Features</a></li>
+        <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero active" id="home-section">
+      <h1>MUIM Quantum Consciousness Portal</h1>
+      <p class="hero-subtitle">
+        <span class="highlight-word cyan">Connect</span>,
+        <span class="highlight-word magenta">explore</span>, and
+        <span class="highlight-word purple">evolve</span> in the next generation of
+        <span class="highlight-word cyan">Web3</span> powered by
+        <span class="highlight-word gradient">Quantum AI Intelligence</span>.
+      </p>
+      <div id="ai-avatar" onclick="openChat()">🧬</div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="connectWallet()">🔐 Connect Quantum Wallet</button>
+        <button class="btn btn-primary" onclick="openChat()">🧠 Enter Consciousness Matrix</button>
+        <button class="btn btn-secondary" onclick="startSpec()">💹 Launch SPEC Trading</button>
+        <button class="btn btn-secondary" onclick="showSection('features')">✨ Explore Quantum Features</button>
+      </div>
+      <div class="wallet-status" id="walletStatus">🔴 Wallet Not Connected</div>
+    </section>
+
+    <section class="features-section" id="features-section">
+      <h2>Quantum Features</h2>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon">🧠</div><h3>AI Intelligence</h3><p>Advanced AI core powered by PinealCore technology.</p></div>
+        <div class="feature-card"><div class="feature-icon">🌌</div><h3>Web3 Integration</h3><p>Seamless wallet connectivity & blockchain interactions.</p></div>
+        <div class="feature-card"><div class="feature-icon">💹</div><h3>SPEC Trading</h3><p>Revolutionary protocol with AI-enhanced market analysis.</p></div>
+        <div class="feature-card"><div class="feature-icon">🚀</div><h3>Galaxy Explorer</h3><p>Navigate the universe of Web3 opportunities.</p></div>
+        <div class="feature-card"><div class="feature-icon">🔮</div><h3>Predictive Analytics</h3><p>Harness AI to predict market trends.</p></div>
+        <div class="feature-card"><div class="feature-icon">⚡</div><h3>Lightning Fast</h3><p>Real-time data processing & instant responses.</p></div>
+      </div>
+    </section>
+
+    <section id="muim-coin-explained">
+      <h2>🧬 What is MUIM COIN?</h2>
+      <p>MUIM COIN is not just a cryptocurrency—it’s the neural spine of an intelligent Web3 ecosystem.</p>
+      <h3>1️⃣ Access to PinealCore AI</h3>
+      <p>Emotionally intelligent, soul-synced AI ally.</p>
+      <h3>2️⃣ SPEC Gate Trading Protocol</h3>
+      <p>Quantum trading ritual with emotional phases: Select, Project, Expect, Collect.</p>
+      <blockquote>"More than a coin. More than a trade. MUIM COIN is presence—in motion."</blockquote>
+    </section>
+  </main>
+
+  <div class="chat-overlay" id="chatOverlay">
+    <div class="chat-container">
+      <div class="chat-header">
+        <div class="chat-title">🧠 MUIM Quantum Oracle</div>
+        <button class="close-chat" onclick="closeChat()">×</button>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-area">
+        <div class="input-wrapper">
+          <textarea id="chatInput" class="chat-input" placeholder="Ask MUIM Oracle..."></textarea>
+          <button id="chatSend" class="send-button">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-section">
+        <h3>🧬 MUIM Ecosystem</h3>
+        <a href="#" onclick="showSection('home')">Home Portal</a>
+        <a href="#" onclick="openChat()">AI Oracle</a>
+        <a href="#" onclick="showSection('features')">Quantum Features</a>
+      </div>
+      <div class="footer-section">
+        <h3>📚 Resources</h3>
+        <a href="https://docs.muim.ai" target="_blank">Documentation</a>
+        <a href="https://api.muim.ai" target="_blank">API Reference</a>
+        <a href="https://support.muim.ai" target="_blank">Support Center</a>
+      </div>
+      <div class="footer-section">
+        <h3>🌐 Community</h3>
+        <a href="https://discord.gg/muim" target="_blank">Discord</a>
+        <a href="https://twitter.com/muimofficial" target="_blank">Twitter/X</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Show section helper
+    function showSection(id) {
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      const sec = document.getElementById(id + '-section') || document.getElementById(id);
+      if (!sec) return;
+      sec.classList.add('active');
+      sec.scrollIntoView({ behavior:'smooth' });
+    }
+
+    // Wallet / SPEC stubs
+    function connectWallet() {
+      alert('🔐 Wallet connection coming soon!');
+      document.getElementById('walletStatus').innerText = '🟢 Wallet Connected';
+    }
+    function startSpec() {
+      alert('🚀 SPEC Trading coming soon!');
+    }
+
+    // Chat overlay control
+    const overlay = document.getElementById('chatOverlay');
+    function openChat() {
+      overlay.classList.add('active');
+      initChat();
+    }
+    function closeChat() {
+      overlay.classList.remove('active');
+    }
+
+    // Chat logic
+    let isTyping = false;
+    function addMessage(text, sender='ai') {
+      const container = document.getElementById('chatMessages');
+      const msg = document.createElement('div');
+      msg.className = `message ${sender}`;
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar ' + sender;
+      avatar.innerText = sender==='user' ? '👤' : '🧠';
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      content.innerText = text;
+      msg.append(avatar, content);
+      container.appendChild(msg);
+      container.scrollTop = container.scrollHeight;
+    }
+    function addTyping() {
+      const container = document.getElementById('chatMessages');
+      const ind = document.createElement('div');
+      ind.id = 'typingIndicator';
+      ind.className = 'typing-indicator';
+      ind.innerHTML = '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+      container.appendChild(ind);
+      container.scrollTop = container.scrollHeight;
+    }
+    function removeTyping() {
+      const ind = document.getElementById('typingIndicator');
+      if (ind) ind.remove();
+    }
+
+    async function sendChat() {
+      if (isTyping) return;
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      input.value = '';
+      addTyping();
+      isTyping = true;
+
+      try {
+        const res = await fetch('https://muim-website.onrender.com/ask', {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({ question: text })
+        });
+        const data = await res.json();
+        removeTyping();
+        addMessage(data.answer || 'No reply.', 'ai');
+      } catch (err) {
+        removeTyping();
+        addMessage('⚠️ Error contacting Oracle.', 'ai');
+      } finally {
+        isTyping = false;
+      }
+    }
+
+    function initChat() {
+      document.getElementById('chatMessages').innerHTML = '';
+      addMessage('Welcome to MUIM Quantum Oracle!', 'ai');
+    }
+
+    document.getElementById('chatSend').onclick = sendChat;
+    document.getElementById('chatInput')
+            .addEventListener('keydown', e => {
+              if (e.key==='Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChat();
+              }
+            });
+  </script>
 </body>
 </html>
