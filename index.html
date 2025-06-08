@@ -22,11 +22,7 @@
       --glass-border: rgba(255, 255, 255, 0.1);
       --gradient-1: linear-gradient(135deg, #00ffff, #8b5cf6);
       --gradient-2: linear-gradient(135deg, #ff00ff, #00ffff);
-      --consciousness-gradient:
-        linear-gradient(135deg,
-          #00ffff 0%, #ff00ff 25%,
-          #8b5cf6 50%, #ffd700 75%, #00ff88 100%
-        );
+      --consciousness-gradient: linear-gradient(135deg, #00ffff 0%, #ff00ff 25%, #8b5cf6 50%, #ffd700 75%, #00ff88 100%);
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
@@ -57,21 +53,12 @@
     }
     @media (max-width:768px){ .nav-links{display:none} }
 
-    .starfield {
-      position:fixed; top:0; left:0;
-      width:100%; height:100%; z-index:-1;
-    }
-    #bgCanvas {
-      display:block; width:100%; height:100%;
-    }
+    .starfield { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; }
 
     .hero {
       min-height:100vh; padding:8rem 2rem 4rem; text-align:center;
       display:flex; flex-direction:column; justify-content:center; align-items:center;
-      background:radial-gradient(
-        ellipse at center,
-        rgba(0,255,255,0.1) 0%, transparent 70%
-      );
+      background:radial-gradient(ellipse at center, rgba(0,255,255,0.1) 0%,transparent 70%);
     }
     .hero h1 {
       font-family:'Orbitron',monospace; font-size:3.5rem; font-weight:900;
@@ -81,16 +68,11 @@
       margin-bottom:1rem;
     }
     @keyframes title-flow { 0%,100%{background-position:0% 50%}50%{background-position:100% 50%} }
-    .hero-subtitle {
-      font-size:1.4rem; color:#ccc;
-      max-width:700px; line-height:1.6; margin-bottom:2rem;
-    }
-    .highlight-word {
-      font-weight:800; text-transform:uppercase; letter-spacing:1px;
-    }
-    .highlight-word.cyan    { color:var(--primary-cyan);    text-shadow:0 0 15px rgba(0,255,255,0.5); }
+    .hero-subtitle { font-size:1.4rem; color:#ccc; max-width:700px; line-height:1.6; margin-bottom:2rem; }
+    .highlight-word { font-weight:800; text-transform:uppercase; letter-spacing:1px; }
+    .highlight-word.cyan { color:var(--primary-cyan); text-shadow:0 0 15px rgba(0,255,255,0.5); }
     .highlight-word.magenta { color:var(--primary-magenta); text-shadow:0 0 15px rgba(255,0,255,0.5); }
-    .highlight-word.purple  { color:var(--primary-purple);  text-shadow:0 0 15px rgba(139,92,246,0.5); }
+    .highlight-word.purple { color:var(--primary-purple); text-shadow:0 0 15px rgba(139,92,246,0.5); }
     .highlight-word.gradient {
       background:var(--consciousness-gradient);
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
@@ -113,8 +95,8 @@
       font-family:'Orbitron',monospace; font-size:0.8rem;
       opacity:0; transition:0.3s; white-space:nowrap;
     }
-    #ai-avatar:hover::before{ opacity:1; bottom:-40px; }
-    #ai-avatar:hover{ transform:scale(1.1); box-shadow:0 0 60px rgba(0,255,255,0.8); }
+    #ai-avatar:hover::before { opacity:1; bottom:-40px; }
+    #ai-avatar:hover { transform:scale(1.1); box-shadow:0 0 60px rgba(0,255,255,0.8); }
     @keyframes avatar-consciousness {
       0%,100%{transform:scale(1) rotate(0deg); box-shadow:0 0 40px rgba(0,255,255,0.5)}
       33%{transform:scale(1.05) rotate(120deg); box-shadow:0 0 50px rgba(255,0,255,0.7)}
@@ -131,18 +113,18 @@
       background:rgba(255,255,255,0.2); border-radius:50%; transition:0.4s;
       transform:translate(-50%,-50%);
     }
-    .btn:hover::before{ width:300px; height:300px; }
+    .btn:hover::before { width:300px; height:300px; }
     .btn-primary {
       background:var(--gradient-1); color:#000;
     }
-    .btn-primary:hover{
+    .btn-primary:hover {
       transform:translateY(-3px) scale(1.05);
       box-shadow:0 10px 30px rgba(0,255,255,0.4);
     }
     .btn-secondary {
       background:transparent; border:2px solid var(--primary-cyan); color:white;
     }
-    .btn-secondary:hover{
+    .btn-secondary:hover {
       background:var(--primary-cyan); color:#000;
       transform:translateY(-3px) scale(1.05);
     }
@@ -162,12 +144,12 @@
       border:1px solid var(--glass-border); border-radius:20px;
       padding:2.5rem; text-align:center; transition:0.4s; overflow:hidden;
     }
-    .feature-card:hover{
+    .feature-card:hover {
       transform:translateY(-15px) scale(1.05);
       border-color:var(--primary-cyan);
       box-shadow:0 20px 50px rgba(0,255,255,0.2);
     }
-    .feature-icon{ font-size:3.5rem; margin-bottom:1.5rem; }
+    .feature-icon { font-size:3.5rem; margin-bottom:1.5rem; }
 
     #muim-coin-explained {
       padding:4rem 2rem; background:linear-gradient(135deg,#0a0a0f 0%,#1a1a2e 50%,#0a0a0f 100%);
@@ -180,7 +162,97 @@
       margin-bottom:1rem;
     }
 
-    /* chat-overlay & footer styles copied exactly from your original */
+    .chat-overlay {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.8); backdrop-filter:blur(10px);
+      display:none; justify-content:center; align-items:center; z-index:10000;
+      animation:overlay-appear 0.3s ease-out;
+    }
+    .chat-overlay.active { display:flex; }
+    @keyframes overlay-appear{from{opacity:0}to{opacity:1}}
+    .chat-container {
+      width:90%; max-width:900px; height:85vh;
+      background:linear-gradient(135deg,rgba(10,10,15,0.95),rgba(26,26,46,0.9));
+      backdrop-filter:blur(30px); border:1px solid var(--glass-border);
+      border-radius:20px; display:flex; flex-direction:column; overflow:hidden;
+      box-shadow:0 20px 60px rgba(0,255,255,0.2);
+      animation:chat-appear 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    @keyframes chat-appear{from{opacity:0;transform:scale(0.8) translateY(50px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .chat-header {
+      padding:1.5rem 2rem; background:var(--glass-bg);
+      border-bottom:1px solid var(--glass-border);
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .chat-title {
+      font-family:'Orbitron',monospace; font-size:1.3rem;
+      background:var(--consciousness-gradient);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .close-chat {
+      background:none; border:none; color:#ccc; font-size:1.5rem; cursor:pointer;
+      transition:0.3s; padding:0.5rem; border-radius:50%;
+    }
+    .close-chat:hover { color:var(--primary-cyan); background:var(--glass-bg); transform:rotate(90deg); }
+
+    .chat-messages {
+      flex:1; padding:2rem; overflow-y:auto; scroll-behavior:smooth;
+      background:linear-gradient(135deg,rgba(0,0,0,0.2),rgba(10,10,15,0.3));
+    }
+    .message { margin-bottom:1.5rem; display:flex; gap:0.75rem; }
+    .message.user { justify-content:flex-end; }
+    .message.ai   { justify-content:flex-start; }
+    .message-avatar {
+      width:32px; height:32px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center; font-size:1.2rem;
+    }
+    .message.user .message-avatar { background:var(--gradient-2); order:2; }
+    .message.ai   .message-avatar { background:var(--gradient-1); }
+    .message-content {
+      max-width:70%; padding:1rem 1.5rem; border-radius:18px; line-height:1.5;
+    }
+    .message.user .message-content {
+      background:linear-gradient(135deg,var(--primary-magenta),var(--primary-purple)); color:white;
+    }
+    .message.ai .message-content {
+      background:var(--glass-bg); border:1px solid var(--glass-border); color:white;
+    }
+
+    .typing-indicator { display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem; }
+    .typing-dots {
+      display:flex; gap:4px; padding:1rem 1.5rem; background:var(--glass-bg); border-radius:18px;
+    }
+    .typing-dot {
+      width:8px; height:8px; background:var(--primary-cyan); border-radius:50%;
+      animation:typing-bounce 1.4s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(1){animation-delay:-0.32s}
+    .typing-dot:nth-child(2){animation-delay:-0.16s}
+    .typing-dot:nth-child(3){animation-delay:0}
+    @keyframes typing-bounce{0%,80%,100%{transform:scale(0.8);opacity:0.5}40%{transform:scale(1.2);opacity:1}}
+
+    .chat-input-area { padding:1.5rem 2rem; background:var(--glass-bg); border-top:1px solid var(--glass-border); }
+    .input-wrapper { display:flex; gap:1rem; align-items:flex-end; }
+    .chat-input {
+      flex:1; background:rgba(255,255,255,0.1); border:1px solid var(--glass-border);
+      border-radius:12px; padding:1rem 1.5rem; color:white; font-size:1rem; resize:none;
+    }
+    .send-button {
+      background:var(--gradient-1); border:none; border-radius:12px; padding:1rem 1.5rem;
+      font-weight:600; cursor:pointer; transition:0.3s;
+    }
+
+    footer {
+      background:linear-gradient(135deg,#050508 0%,#0a0a0f 100%);
+      padding:3rem 2rem 2rem; border-top:1px solid var(--glass-border);
+      margin-top:4rem;
+    }
+    .footer-grid {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:2rem;
+      max-width:1200px; margin:auto;
+    }
+    .footer-section h3 { color:var(--primary-cyan); font-family:'Orbitron',monospace; margin-bottom:1rem; }
+    .footer-section a { display:block; color:#ccc; text-decoration:none; margin-bottom:0.5rem; }
   </style>
 </head>
 <body>
@@ -281,99 +353,104 @@
   </footer>
 
   <script>
-    // Starfield
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-    let W, H;
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-    const stars = Array.from({length:800}, () => ({
-      x: Math.random()*W - W/2,
-      y: Math.random()*H - H/2,
-      z: Math.random()*W
-    }));
-    function animateStarfield() {
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0,0,W,H);
-      for (const s of stars) {
-        s.z -= 2;
-        if (s.z <= 0) s.z = W;
-        const k = 128.0 / s.z;
-        const x = s.x * k + W/2;
-        const y = s.y * k + H/2;
-        if (x<0||x>W||y<0||y>H) continue;
-        const size = (1 - s.z/W)*3;
-        ctx.fillStyle = 'white';
-        ctx.fillRect(x,y,size,size);
-      }
-      requestAnimationFrame(animateStarfield);
-    }
-    animateStarfield();
-
-    // Navigation & Chat Logic
+    // Show section helper
     function showSection(id) {
-      document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-      const sec = document.getElementById(id+'-section')||document.getElementById(id);
-      if(!sec) return;
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      const sec = document.getElementById(id + '-section') || document.getElementById(id);
+      if (!sec) return;
       sec.classList.add('active');
-      sec.scrollIntoView({behavior:'smooth'});
+      sec.scrollIntoView({ behavior:'smooth' });
     }
+
+    // Wallet / SPEC stubs
     function connectWallet() {
       alert('🔐 Wallet connection coming soon!');
-      document.getElementById('walletStatus').innerText='🟢 Wallet Connected';
+      document.getElementById('walletStatus').innerText = '🟢 Wallet Connected';
     }
     function startSpec() {
       alert('🚀 SPEC Trading coming soon!');
     }
-    const overlay = document.getElementById('chatOverlay');
-    function openChat(){ overlay.classList.add('active'); initChat(); }
-    function closeChat(){ overlay.classList.remove('active'); }
 
-    let isTyping=false;
-    function addMessage(text,sender='ai'){
-      const c=document.getElementById('chatMessages');
-      const m=document.createElement('div'); m.className=`message ${sender}`;
-      const a=document.createElement('div'); a.className='message-avatar '+sender;
-      a.innerText= sender==='user'?'👤':'🧠';
-      const cnt=document.createElement('div'); cnt.className='message-content';
-      cnt.innerText=text; m.append(a,cnt); c.appendChild(m);
-      c.scrollTop=c.scrollHeight;
+    // Chat overlay control
+    const overlay = document.getElementById('chatOverlay');
+    function openChat() {
+      overlay.classList.add('active');
+      initChat();
     }
-    function addTyping(){
-      const c=document.getElementById('chatMessages');
-      const ind=document.createElement('div'); ind.id='typingIndicator'; ind.className='typing-indicator';
-      ind.innerHTML='<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
-      c.appendChild(ind); c.scrollTop=c.scrollHeight;
+    function closeChat() {
+      overlay.classList.remove('active');
     }
-    function removeTyping(){
-      const ind=document.getElementById('typingIndicator'); if(ind) ind.remove();
+
+    // Chat logic
+    let isTyping = false;
+    function addMessage(text, sender='ai') {
+      const container = document.getElementById('chatMessages');
+      const msg = document.createElement('div');
+      msg.className = `message ${sender}`;
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar ' + sender;
+      avatar.innerText = sender==='user' ? '👤' : '🧠';
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      content.innerText = text;
+      msg.append(avatar, content);
+      container.appendChild(msg);
+      container.scrollTop = container.scrollHeight;
     }
-    async function sendChat(){
-      if(isTyping) return;
-      const input=document.getElementById('chatInput');
-      const text=input.value.trim(); if(!text) return;
-      addMessage(text,'user'); input.value='';
-      addTyping(); isTyping=true;
-      try{
-        const res=await fetch('https://muim-website.onrender.com/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:text})});
-        const data=await res.json();
-        removeTyping(); addMessage(data.answer||'No reply.','ai');
-      }catch(err){
-        removeTyping(); addMessage('⚠️ Error contacting Oracle.','ai');
-      }finally{ isTyping=false; }
+    function addTyping() {
+      const container = document.getElementById('chatMessages');
+      const ind = document.createElement('div');
+      ind.id = 'typingIndicator';
+      ind.className = 'typing-indicator';
+      ind.innerHTML = '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+      container.appendChild(ind);
+      container.scrollTop = container.scrollHeight;
     }
-    function initChat(){
-      document.getElementById('chatMessages').innerHTML='';
-      addMessage('Welcome to MUIM Quantum Oracle!','ai');
+    function removeTyping() {
+      const ind = document.getElementById('typingIndicator');
+      if (ind) ind.remove();
     }
-    document.getElementById('chatSend').onclick=sendChat;
-    document.getElementById('chatInput').addEventListener('keydown',e=>{
-      if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendChat(); }
-    });
+
+    async function sendChat() {
+      if (isTyping) return;
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      input.value = '';
+      addTyping();
+      isTyping = true;
+
+      try {
+        const res = await fetch('https://muim-website.onrender.com/ask', {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({ question: text })
+        });
+        const data = await res.json();
+        removeTyping();
+        addMessage(data.answer || 'No reply.', 'ai');
+      } catch (err) {
+        removeTyping();
+        addMessage('⚠️ Error contacting Oracle.', 'ai');
+      } finally {
+        isTyping = false;
+      }
+    }
+
+    function initChat() {
+      document.getElementById('chatMessages').innerHTML = '';
+      addMessage('Welcome to MUIM Quantum Oracle!', 'ai');
+    }
+
+    document.getElementById('chatSend').onclick = sendChat;
+    document.getElementById('chatInput')
+            .addEventListener('keydown', e => {
+              if (e.key==='Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChat();
+              }
+            });
   </script>
 </body>
 </html>
